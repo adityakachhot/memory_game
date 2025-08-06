@@ -9,6 +9,7 @@
    * A different format will require also updating the theme in tailwind.config.ts.
   */
   :root {
+    --animation-speed-multiplier: 1;
     --background: 240 10% 4%;
     --foreground: 0 0% 95%;
 
