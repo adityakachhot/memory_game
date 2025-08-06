@@ -133,17 +133,16 @@ export default function CardFlipGame() {
         // Match found - celebrate!
         setTimeout(() => {
           const matchedCards = [
-            document.querySelector(`[data-card-id="${firstId}"]`),
-            document.querySelector(`[data-card-id="${secondId}"]`)
+            document.querySelector(`[data-card-id="${firstId}"]`) as HTMLElement,
+            document.querySelector(`[data-card-id="${secondId}"]`) as HTMLElement
           ];
 
-          // Celebration animation
-          anime({
-            targets: matchedCards,
-            scale: [1, 1.1, 1],
-            rotateZ: [0, 5, -5, 0],
-            duration: 600,
-            easing: 'easeOutElastic(1, .8)'
+          // Celebration animation with CSS
+          matchedCards.forEach(card => {
+            if (card) {
+              card.classList.add('animate-bounce');
+              setTimeout(() => card.classList.remove('animate-bounce'), 600);
+            }
           });
 
           setCards(prev => prev.map(c =>
@@ -158,15 +157,20 @@ export default function CardFlipGame() {
         // No match - shake animation
         setTimeout(() => {
           const wrongCards = [
-            document.querySelector(`[data-card-id="${firstId}"]`),
-            document.querySelector(`[data-card-id="${secondId}"]`)
+            document.querySelector(`[data-card-id="${firstId}"]`) as HTMLElement,
+            document.querySelector(`[data-card-id="${secondId}"]`) as HTMLElement
           ];
 
-          anime({
-            targets: wrongCards,
-            translateX: [-10, 10, -5, 5, 0],
-            duration: 400,
-            easing: 'easeOutQuad'
+          // Shake animation with CSS
+          wrongCards.forEach(card => {
+            if (card) {
+              card.classList.add('animate-pulse');
+              card.style.animation = 'shake 0.4s ease-out';
+              setTimeout(() => {
+                card.classList.remove('animate-pulse');
+                card.style.animation = '';
+              }, 400);
+            }
           });
 
           setTimeout(() => {
