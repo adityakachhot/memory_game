@@ -134,10 +134,13 @@ export default function GuessCupGame() {
   const handleCupClick = (cupIndex: number) => {
     if (gamePhase !== "guessing") return;
 
-    const isCorrect = cupIndex === ballPosition;
+    // Find which cup is currently at this visual position
+    const clickedCup = cups.find(cup => cup.visualPosition === cupIndex);
+    const isCorrect = clickedCup?.hasBall || false;
+
     setLastGuessCorrect(isCorrect);
     setShowResult(true);
-    
+
     // Lift all cups to show result
     setCups(prev => prev.map(cup => ({ ...cup, isLifted: true })));
     setGamePhase("result");
