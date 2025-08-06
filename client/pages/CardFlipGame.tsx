@@ -283,16 +283,17 @@ export default function CardFlipGame() {
         )}
 
         {/* Game Board */}
-        <div className={cn(
+        <div ref={gameGridRef} className={cn(
           "grid gap-4 max-w-2xl mx-auto",
           difficultySettings[difficulty].gridCols
         )}>
           {cards.map((card) => (
             <div
               key={card.id}
+              data-card-id={card.id}
               onClick={() => handleCardClick(card.id)}
               className={cn(
-                "relative aspect-square cursor-pointer transition-all duration-300 transform-gpu",
+                "game-card relative aspect-square cursor-pointer transition-all duration-300 transform-gpu",
                 "hover:scale-105",
                 card.isMatched && "scale-90 opacity-75"
               )}
