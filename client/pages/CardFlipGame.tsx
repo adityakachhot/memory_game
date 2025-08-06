@@ -1,0 +1,294 @@
+import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, RotateCcw, Trophy, Timer, Zap } from "lucide-react";
+import Layout from "@/components/Layout";
+import { cn } from "@/lib/utils";
+
+interface GameCard {
+  id: number;
+  value: string;
+  isFlipped: boolean;
+  isMatched: boolean;
+}
+
+const cardSymbols = ["🎯", "🎮", "🎲", "🎪", "🎨", "🎭", "🎸", "🎺", "🎷", "🎻", "🎹", "🎼"];
+
+export default function CardFlipGame() {
+  const [cards, setCards] = useState<GameCard[]>([]);
+  const [flippedCards, setFlippedCards] = useState<number[]>([]);
+  const [moves, setMoves] = useState(0);
+  const [matches, setMatches] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameCompleted, setGameCompleted] = useState(false);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
+
+  const difficultySettings = {
+    easy: { pairs: 6, gridCols: "grid-cols-3", name: "Easy" },
+    medium: { pairs: 8, gridCols: "grid-cols-4", name: "Medium" },
+    hard: { pairs: 12, gridCols: "grid-cols-4", name: "Hard" }
+  };
+
+  const initializeGame = useCallback(() => {
+    const pairs = difficultySettings[difficulty].pairs;
+    const symbols = cardSymbols.slice(0, pairs);
+    const gameCards = [...symbols, ...symbols]
+      .map((symbol, index) => ({
+        id: index,
+        value: symbol,
+        isFlipped: false,
+        isMatched: false,
+      }))
+      .sort(() => Math.random() - 0.5);
+    
+    setCards(gameCards);
+    setFlippedCards([]);
+    setMoves(0);
+    setMatches(0);
+    setGameStarted(false);
+    setGameCompleted(false);
+    setTimeElapsed(0);
+  }, [difficulty]);
+
+  useEffect(() => {
+    initializeGame();
+  }, [initializeGame]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (gameStarted && !gameCompleted) {
+      interval = setInterval(() => {
+        setTimeElapsed(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [gameStarted, gameCompleted]);
+
+  useEffect(() => {
+    if (matches === difficultySettings[difficulty].pairs) {
+      setGameCompleted(true);
+    }
+  }, [matches, difficulty]);
+
+  const handleCardClick = (cardId: number) => {
+    if (!gameStarted) setGameStarted(true);
+    
+    const card = cards.find(c => c.id === cardId);
+    if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2) return;
+
+    const newFlippedCards = [...flippedCards, cardId];
+    setFlippedCards(newFlippedCards);
+
+    setCards(prev => prev.map(c => 
+      c.id === cardId ? { ...c, isFlipped: true } : c
+    ));
+
+    if (newFlippedCards.length === 2) {
+      setMoves(prev => prev + 1);
+      
+      const [firstId, secondId] = newFlippedCards;
+      const firstCard = cards.find(c => c.id === firstId);
+      const secondCard = cards.find(c => c.id === secondId);
+
+      if (firstCard?.value === secondCard?.value) {
+        // Match found
+        setTimeout(() => {
+          setCards(prev => prev.map(c => 
+            c.id === firstId || c.id === secondId 
+              ? { ...c, isMatched: true }
+              : c
+          ));
+          setMatches(prev => prev + 1);
+          setFlippedCards([]);
+        }, 500);
+      } else {
+        // No match
+        setTimeout(() => {
+          setCards(prev => prev.map(c => 
+            c.id === firstId || c.id === secondId 
+              ? { ...c, isFlipped: false }
+              : c
+          ));
+          setFlippedCards([]);
+        }, 1000);
+      }
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getScore = () => {
+    const baseScore = difficultySettings[difficulty].pairs * 100;
+    const timeBonus = Math.max(0, 300 - timeElapsed);
+    const moveBonus = Math.max(0, (difficultySettings[difficulty].pairs * 2 - moves) * 10);
+    return baseScore + timeBonus + moveBonus;
+  };
+
+  return (
+    <Layout>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <Link to="/">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold text-foreground">Card Flip Memory</h1>
+          <Button variant="outline" size="sm" onClick={initializeGame} className="gap-2">
+            <RotateCcw className="h-4 w-4" />
+            New Game
+          </Button>
+        </div>
+
+        {/* Game Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Timer className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-lg font-bold">{formatTime(timeElapsed)}</p>
+                <p className="text-xs text-muted-foreground">Time</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-lg font-bold">{moves}</p>
+                <p className="text-xs text-muted-foreground">Moves</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-lg font-bold">{matches}/{difficultySettings[difficulty].pairs}</p>
+                <p className="text-xs text-muted-foreground">Matches</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Badge variant="secondary">{difficultySettings[difficulty].name}</Badge>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Difficulty Selection */}
+        {!gameStarted && (
+          <Card className="bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-center">Choose Difficulty</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center gap-4">
+              {(Object.keys(difficultySettings) as Array<keyof typeof difficultySettings>).map((level) => (
+                <Button
+                  key={level}
+                  variant={difficulty === level ? "default" : "outline"}
+                  onClick={() => setDifficulty(level)}
+                  className={cn(
+                    "transition-all",
+                    difficulty === level && "bg-primary text-primary-foreground"
+                  )}
+                >
+                  {difficultySettings[level].name}
+                  <Badge variant="secondary" className="ml-2">
+                    {difficultySettings[level].pairs} pairs
+                  </Badge>
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Game Board */}
+        <div className={cn(
+          "grid gap-4 max-w-2xl mx-auto",
+          difficultySettings[difficulty].gridCols
+        )}>
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              onClick={() => handleCardClick(card.id)}
+              className={cn(
+                "relative aspect-square cursor-pointer transition-all duration-300 transform-gpu",
+                "hover:scale-105",
+                card.isMatched && "scale-90 opacity-75"
+              )}
+            >
+              <div className={cn(
+                "w-full h-full rounded-lg transition-transform duration-500 transform-style-preserve-3d",
+                (card.isFlipped || card.isMatched) && "rotate-y-180"
+              )}>
+                {/* Front (Hidden) */}
+                <div className="absolute inset-0 backface-hidden rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 border-2 border-primary/30 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 animate-pulse"></div>
+                </div>
+                
+                {/* Back (Revealed) */}
+                <div className={cn(
+                  "absolute inset-0 backface-hidden rotate-y-180 rounded-lg border-2 flex items-center justify-center text-4xl transition-colors",
+                  card.isMatched 
+                    ? "bg-green-500/20 border-green-500/50 text-green-400" 
+                    : "bg-card border-border"
+                )}>
+                  {card.value}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Game Completed Modal */}
+        {gameCompleted && (
+          <Card className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <CardContent className="bg-card border-2 border-primary/50 rounded-lg p-8 text-center space-y-6 max-w-md mx-4">
+              <div className="text-6xl">🎉</div>
+              <div>
+                <h2 className="text-2xl font-bold text-primary mb-2">Congratulations!</h2>
+                <p className="text-muted-foreground">You completed the game!</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{formatTime(timeElapsed)}</p>
+                  <p className="text-sm text-muted-foreground">Time</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{moves}</p>
+                  <p className="text-sm text-muted-foreground">Moves</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-3xl font-bold text-primary">{getScore()}</p>
+                  <p className="text-sm text-muted-foreground">Final Score</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button onClick={initializeGame} className="flex-1">
+                  Play Again
+                </Button>
+                <Link to="/" className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    Dashboard
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </Layout>
+  );
+}
