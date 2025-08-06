@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Medal, Crown, Star, Layers, Target, Clock, Zap } from "lucide-react";
+import { Trophy, Medal, Crown, Star, Layers, Target, Clock, Zap, Palette } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 
