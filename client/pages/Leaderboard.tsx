@@ -197,7 +197,7 @@ export default function Leaderboard() {
         </div>
 
         <Tabs defaultValue="card-flip" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="card-flip" className="gap-2">
               <Layers className="h-4 w-4" />
               Card Flip
@@ -205,6 +205,10 @@ export default function Leaderboard() {
             <TabsTrigger value="cup-game" className="gap-2">
               <Trophy className="h-4 w-4" />
               Cup Game
+            </TabsTrigger>
+            <TabsTrigger value="simon-says" className="gap-2">
+              <Palette className="h-4 w-4" />
+              Simon Says
             </TabsTrigger>
             <TabsTrigger value="achievements" className="gap-2">
               <Star className="h-4 w-4" />
