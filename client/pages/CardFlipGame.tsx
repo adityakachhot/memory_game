@@ -238,9 +238,9 @@ export default function CardFlipGame() {
                 
                 {/* Back (Revealed) */}
                 <div className={cn(
-                  "absolute inset-0 backface-hidden rotate-y-180 rounded-lg border-2 flex items-center justify-center text-4xl transition-colors",
-                  card.isMatched 
-                    ? "bg-green-500/20 border-green-500/50 text-green-400" 
+                  "absolute inset-0 backface-hidden rotate-y-180 rounded-lg border-2 flex items-center justify-center text-6xl transition-colors",
+                  card.isMatched
+                    ? "bg-green-500/20 border-green-500/50 text-green-400"
                     : "bg-card border-border"
                 )}>
                   {card.value}
