@@ -55,7 +55,7 @@ export default function Index() {
     // Try to load anime.js and run animations
     const runAnimations = async () => {
       try {
-        const anime = await import("animejs/lib/anime.es.js");
+        const anime = await import("animejs");
         
         // Set initial states for animations
         if (heroRef.current) {
