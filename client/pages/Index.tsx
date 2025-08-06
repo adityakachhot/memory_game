@@ -194,7 +194,7 @@ export default function Index() {
 
   const handleGameCardHover = async (e: React.MouseEvent<HTMLDivElement>) => {
     try {
-      const anime = await import("animejs/lib/anime.es.js");
+      const anime = await import("animejs");
       
       anime.default({
         targets: e.currentTarget,
@@ -221,7 +221,7 @@ export default function Index() {
 
   const handleGameCardLeave = async (e: React.MouseEvent<HTMLDivElement>) => {
     try {
-      const anime = await import("animejs/lib/anime.es.js");
+      const anime = await import("animejs");
       
       anime.default({
         targets: e.currentTarget,
