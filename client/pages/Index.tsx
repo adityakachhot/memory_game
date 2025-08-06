@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Layers, Trophy, Brain } from "lucide-react";
+import { Sparkles, Layers, Trophy, Brain, Palette } from "lucide-react";
 import Layout from "@/components/Layout";
 
 const games = [
