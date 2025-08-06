@@ -1,10 +1,33 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Volume2, VolumeX, Palette, Gamepad2, Zap, Save, RotateCcw, Sun, Moon, Monitor } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Volume2,
+  VolumeX,
+  Palette,
+  Gamepad2,
+  Zap,
+  Save,
+  RotateCcw,
+  Sun,
+  Moon,
+  Monitor,
+} from "lucide-react";
 import Layout from "@/components/Layout";
 import { Badge } from "@/components/ui/badge";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -27,11 +50,11 @@ export default function Settings() {
 
   const getThemeIcon = () => {
     switch (settings.theme) {
-      case 'light':
+      case "light":
         return <Sun className="h-5 w-5 text-primary" />;
-      case 'dark':
+      case "dark":
         return <Moon className="h-5 w-5 text-primary" />;
-      case 'auto':
+      case "auto":
         return <Monitor className="h-5 w-5 text-primary" />;
       default:
         return <Palette className="h-5 w-5 text-primary" />;
@@ -43,7 +66,9 @@ export default function Settings() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-foreground">Game Settings</h1>
-          <p className="text-muted-foreground">Customize your gaming experience</p>
+          <p className="text-muted-foreground">
+            Customize your gaming experience
+          </p>
           {showSaveConfirmation && (
             <div className="bg-green-500/20 border border-green-500/50 rounded-lg p-3 text-green-400 text-sm animate-fade-in-up">
               ✅ Settings saved successfully!
@@ -62,18 +87,24 @@ export default function Settings() {
               )}
               <CardTitle>Audio Settings</CardTitle>
             </div>
-            <CardDescription>Control sound effects and audio preferences</CardDescription>
+            <CardDescription>
+              Control sound effects and audio preferences
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
-              <Label htmlFor="sound-enabled" className="text-base">Enable Sound Effects</Label>
+              <Label htmlFor="sound-enabled" className="text-base">
+                Enable Sound Effects
+              </Label>
               <Switch
                 id="sound-enabled"
                 checked={settings.soundEnabled}
-                onCheckedChange={(checked) => updateSettings({ soundEnabled: checked })}
+                onCheckedChange={(checked) =>
+                  updateSettings({ soundEnabled: checked })
+                }
               />
             </div>
-            
+
             {settings.soundEnabled && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -86,7 +117,9 @@ export default function Settings() {
                   max={100}
                   step={10}
                   value={[settings.soundVolume]}
-                  onValueChange={(value) => updateSettings({ soundVolume: value[0] })}
+                  onValueChange={(value) =>
+                    updateSettings({ soundVolume: value[0] })
+                  }
                   className="flex-1"
                 />
               </div>
@@ -101,12 +134,19 @@ export default function Settings() {
               {getThemeIcon()}
               <CardTitle>Visual Settings</CardTitle>
             </div>
-            <CardDescription>Customize the look and feel of the games</CardDescription>
+            <CardDescription>
+              Customize the look and feel of the games
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="theme">Theme</Label>
-              <Select value={settings.theme} onValueChange={(value: 'light' | 'dark' | 'auto') => updateSettings({ theme: value })}>
+              <Select
+                value={settings.theme}
+                onValueChange={(value: "light" | "dark" | "auto") =>
+                  updateSettings({ theme: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select theme" />
                 </SelectTrigger>
@@ -132,18 +172,19 @@ export default function Settings() {
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                {settings.theme === 'auto' 
-                  ? 'Follows your system preference'
-                  : `Currently using ${settings.theme} mode`
-                }
+                {settings.theme === "auto"
+                  ? "Follows your system preference"
+                  : `Currently using ${settings.theme} mode`}
               </p>
             </div>
 
             <div className="space-y-3">
               <Label htmlFor="animation-speed">Animation Speed</Label>
-              <Select 
-                value={settings.animationSpeed} 
-                onValueChange={(value: 'slow' | 'normal' | 'fast' | 'none') => updateSettings({ animationSpeed: value })}
+              <Select
+                value={settings.animationSpeed}
+                onValueChange={(value: "slow" | "normal" | "fast" | "none") =>
+                  updateSettings({ animationSpeed: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select speed" />
@@ -156,10 +197,9 @@ export default function Settings() {
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                {settings.animationSpeed === 'none' 
-                  ? 'All animations are disabled'
-                  : `Animations play at ${settings.animationSpeed} speed`
-                }
+                {settings.animationSpeed === "none"
+                  ? "All animations are disabled"
+                  : `Animations play at ${settings.animationSpeed} speed`}
               </p>
             </div>
           </CardContent>
@@ -172,14 +212,18 @@ export default function Settings() {
               <Gamepad2 className="h-5 w-5 text-primary" />
               <CardTitle>Gameplay Settings</CardTitle>
             </div>
-            <CardDescription>Adjust game mechanics and difficulty</CardDescription>
+            <CardDescription>
+              Adjust game mechanics and difficulty
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="difficulty">Default Difficulty</Label>
-              <Select 
-                value={settings.difficulty} 
-                onValueChange={(value: 'easy' | 'normal' | 'hard' | 'adaptive') => updateSettings({ difficulty: value })}
+              <Select
+                value={settings.difficulty}
+                onValueChange={(
+                  value: "easy" | "normal" | "hard" | "adaptive",
+                ) => updateSettings({ difficulty: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select difficulty" />
@@ -188,7 +232,9 @@ export default function Settings() {
                   <SelectItem value="easy">Easy</SelectItem>
                   <SelectItem value="normal">Normal</SelectItem>
                   <SelectItem value="hard">Hard</SelectItem>
-                  <SelectItem value="adaptive">Adaptive (Recommended)</SelectItem>
+                  <SelectItem value="adaptive">
+                    Adaptive (Recommended)
+                  </SelectItem>
                 </SelectContent>
               </Select>
               {settings.difficulty === "adaptive" && (
@@ -200,25 +246,37 @@ export default function Settings() {
 
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label htmlFor="show-hints" className="text-base">Show Hints</Label>
-                <p className="text-sm text-muted-foreground">Display helpful tips during games</p>
+                <Label htmlFor="show-hints" className="text-base">
+                  Show Hints
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Display helpful tips during games
+                </p>
               </div>
               <Switch
                 id="show-hints"
                 checked={settings.showHints}
-                onCheckedChange={(checked) => updateSettings({ showHints: checked })}
+                onCheckedChange={(checked) =>
+                  updateSettings({ showHints: checked })
+                }
               />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label htmlFor="auto-save" className="text-base">Auto-save Progress</Label>
-                <p className="text-sm text-muted-foreground">Automatically save your game progress</p>
+                <Label htmlFor="auto-save" className="text-base">
+                  Auto-save Progress
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Automatically save your game progress
+                </p>
               </div>
               <Switch
                 id="auto-save"
                 checked={settings.autoSave}
-                onCheckedChange={(checked) => updateSettings({ autoSave: checked })}
+                onCheckedChange={(checked) =>
+                  updateSettings({ autoSave: checked })
+                }
               />
             </div>
           </CardContent>
@@ -236,13 +294,19 @@ export default function Settings() {
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label htmlFor="haptic-feedback" className="text-base">Haptic Feedback</Label>
-                <p className="text-sm text-muted-foreground">Enable vibration on mobile devices</p>
+                <Label htmlFor="haptic-feedback" className="text-base">
+                  Haptic Feedback
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Enable vibration on mobile devices
+                </p>
               </div>
               <Switch
                 id="haptic-feedback"
                 checked={settings.hapticFeedback}
-                onCheckedChange={(checked) => updateSettings({ hapticFeedback: checked })}
+                onCheckedChange={(checked) =>
+                  updateSettings({ hapticFeedback: checked })
+                }
               />
             </div>
           </CardContent>
@@ -252,36 +316,50 @@ export default function Settings() {
         <Card className="bg-primary/5 border-primary/20">
           <CardHeader>
             <CardTitle>Current Settings</CardTitle>
-            <CardDescription>Overview of your current configuration</CardDescription>
+            <CardDescription>
+              Overview of your current configuration
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Theme:</span>
-                  <span className="font-medium capitalize">{settings.theme}</span>
+                  <span className="font-medium capitalize">
+                    {settings.theme}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Animations:</span>
-                  <span className="font-medium capitalize">{settings.animationSpeed}</span>
+                  <span className="font-medium capitalize">
+                    {settings.animationSpeed}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Sound:</span>
-                  <span className="font-medium">{settings.soundEnabled ? `${settings.soundVolume}%` : 'Off'}</span>
+                  <span className="font-medium">
+                    {settings.soundEnabled ? `${settings.soundVolume}%` : "Off"}
+                  </span>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Difficulty:</span>
-                  <span className="font-medium capitalize">{settings.difficulty}</span>
+                  <span className="font-medium capitalize">
+                    {settings.difficulty}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Auto-save:</span>
-                  <span className="font-medium">{settings.autoSave ? 'On' : 'Off'}</span>
+                  <span className="font-medium">
+                    {settings.autoSave ? "On" : "Off"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Hints:</span>
-                  <span className="font-medium">{settings.showHints ? 'On' : 'Off'}</span>
+                  <span className="font-medium">
+                    {settings.showHints ? "On" : "Off"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -294,7 +372,11 @@ export default function Settings() {
             <Save className="h-4 w-4" />
             Save Settings
           </Button>
-          <Button onClick={handleReset} variant="outline" className="gap-2 px-8">
+          <Button
+            onClick={handleReset}
+            variant="outline"
+            className="gap-2 px-8"
+          >
             <RotateCcw className="h-4 w-4" />
             Reset to Defaults
           </Button>

@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Construction, ArrowLeft } from "lucide-react";
 import Layout from "@/components/Layout";
@@ -23,7 +29,8 @@ export default function Placeholder({ title, description }: PlaceholderProps) {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-muted-foreground">
-              This page is under construction. Continue prompting to have the assistant fill in the content for this page.
+              This page is under construction. Continue prompting to have the
+              assistant fill in the content for this page.
             </p>
             <Link to="/">
               <Button className="gap-2">

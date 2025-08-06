@@ -14,7 +14,20 @@ interface GameCard {
   isMatched: boolean;
 }
 
-const cardSymbols = ["🎯", "🎮", "🎲", "🎪", "🎨", "🎭", "🎸", "🎺", "🎷", "🎻", "🎹", "🎼"];
+const cardSymbols = [
+  "🎯",
+  "🎮",
+  "🎲",
+  "🎪",
+  "🎨",
+  "🎭",
+  "🎸",
+  "🎺",
+  "🎷",
+  "🎻",
+  "🎹",
+  "🎼",
+];
 
 export default function CardFlipGame() {
   const [cards, setCards] = useState<GameCard[]>([]);
@@ -24,7 +37,9 @@ export default function CardFlipGame() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
+    "easy",
+  );
 
   const gameGridRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -32,7 +47,7 @@ export default function CardFlipGame() {
   const difficultySettings = {
     easy: { pairs: 6, gridCols: "grid-cols-3", name: "Easy" },
     medium: { pairs: 8, gridCols: "grid-cols-4", name: "Medium" },
-    hard: { pairs: 12, gridCols: "grid-cols-4", name: "Hard" }
+    hard: { pairs: 12, gridCols: "grid-cols-4", name: "Hard" },
   };
 
   const initializeGame = useCallback(() => {
@@ -46,7 +61,7 @@ export default function CardFlipGame() {
         isMatched: false,
       }))
       .sort(() => Math.random() - 0.5);
-    
+
     setCards(gameCards);
     setFlippedCards([]);
     setMoves(0);
@@ -63,11 +78,11 @@ export default function CardFlipGame() {
   // Animate cards entrance when they're initialized
   useEffect(() => {
     if (cards.length > 0 && gameGridRef.current) {
-      const gameCards = gameGridRef.current.querySelectorAll('.game-card');
+      const gameCards = gameGridRef.current.querySelectorAll(".game-card");
       gameCards.forEach((card, index) => {
         const element = card as HTMLElement;
         element.style.animationDelay = `${500 + index * 100}ms`;
-        element.classList.add('animate-fade-in-up');
+        element.classList.add("animate-fade-in-up");
       });
     }
   }, [cards.length, difficulty]);
@@ -75,11 +90,11 @@ export default function CardFlipGame() {
   // Animate stats updates with CSS
   useEffect(() => {
     if (statsRef.current && gameStarted) {
-      const statValues = statsRef.current.querySelectorAll('.stat-value');
-      statValues.forEach(stat => {
+      const statValues = statsRef.current.querySelectorAll(".stat-value");
+      statValues.forEach((stat) => {
         const element = stat as HTMLElement;
-        element.classList.remove('animate-pulse');
-        setTimeout(() => element.classList.add('animate-pulse'), 10);
+        element.classList.remove("animate-pulse");
+        setTimeout(() => element.classList.add("animate-pulse"), 10);
       });
     }
   }, [moves, matches, timeElapsed]);
@@ -88,7 +103,7 @@ export default function CardFlipGame() {
     let interval: NodeJS.Timeout;
     if (gameStarted && !gameCompleted) {
       interval = setInterval(() => {
-        setTimeElapsed(prev => prev + 1);
+        setTimeElapsed((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -103,82 +118,97 @@ export default function CardFlipGame() {
   const handleCardClick = (cardId: number) => {
     if (!gameStarted) setGameStarted(true);
 
-    const card = cards.find(c => c.id === cardId);
-    if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2) return;
+    const card = cards.find((c) => c.id === cardId);
+    if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2)
+      return;
 
     // Animate card click with CSS
-    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`) as HTMLElement;
+    const cardElement = document.querySelector(
+      `[data-card-id="${cardId}"]`,
+    ) as HTMLElement;
     if (cardElement) {
-      cardElement.style.transform = 'scale(0.95)';
+      cardElement.style.transform = "scale(0.95)";
       setTimeout(() => {
-        cardElement.style.transform = 'scale(1)';
+        cardElement.style.transform = "scale(1)";
       }, 100);
     }
 
     const newFlippedCards = [...flippedCards, cardId];
     setFlippedCards(newFlippedCards);
 
-    setCards(prev => prev.map(c =>
-      c.id === cardId ? { ...c, isFlipped: true } : c
-    ));
+    setCards((prev) =>
+      prev.map((c) => (c.id === cardId ? { ...c, isFlipped: true } : c)),
+    );
 
     if (newFlippedCards.length === 2) {
-      setMoves(prev => prev + 1);
+      setMoves((prev) => prev + 1);
 
       const [firstId, secondId] = newFlippedCards;
-      const firstCard = cards.find(c => c.id === firstId);
-      const secondCard = cards.find(c => c.id === secondId);
+      const firstCard = cards.find((c) => c.id === firstId);
+      const secondCard = cards.find((c) => c.id === secondId);
 
       if (firstCard?.value === secondCard?.value) {
         // Match found - celebrate!
         setTimeout(() => {
           const matchedCards = [
-            document.querySelector(`[data-card-id="${firstId}"]`) as HTMLElement,
-            document.querySelector(`[data-card-id="${secondId}"]`) as HTMLElement
+            document.querySelector(
+              `[data-card-id="${firstId}"]`,
+            ) as HTMLElement,
+            document.querySelector(
+              `[data-card-id="${secondId}"]`,
+            ) as HTMLElement,
           ];
 
           // Celebration animation with CSS
-          matchedCards.forEach(card => {
+          matchedCards.forEach((card) => {
             if (card) {
-              card.classList.add('animate-bounce');
-              setTimeout(() => card.classList.remove('animate-bounce'), 600);
+              card.classList.add("animate-bounce");
+              setTimeout(() => card.classList.remove("animate-bounce"), 600);
             }
           });
 
-          setCards(prev => prev.map(c =>
-            c.id === firstId || c.id === secondId
-              ? { ...c, isMatched: true }
-              : c
-          ));
-          setMatches(prev => prev + 1);
+          setCards((prev) =>
+            prev.map((c) =>
+              c.id === firstId || c.id === secondId
+                ? { ...c, isMatched: true }
+                : c,
+            ),
+          );
+          setMatches((prev) => prev + 1);
           setFlippedCards([]);
         }, 500);
       } else {
         // No match - shake animation
         setTimeout(() => {
           const wrongCards = [
-            document.querySelector(`[data-card-id="${firstId}"]`) as HTMLElement,
-            document.querySelector(`[data-card-id="${secondId}"]`) as HTMLElement
+            document.querySelector(
+              `[data-card-id="${firstId}"]`,
+            ) as HTMLElement,
+            document.querySelector(
+              `[data-card-id="${secondId}"]`,
+            ) as HTMLElement,
           ];
 
           // Shake animation with CSS
-          wrongCards.forEach(card => {
+          wrongCards.forEach((card) => {
             if (card) {
-              card.classList.add('animate-pulse');
-              card.style.animation = 'shake 0.4s ease-out';
+              card.classList.add("animate-pulse");
+              card.style.animation = "shake 0.4s ease-out";
               setTimeout(() => {
-                card.classList.remove('animate-pulse');
-                card.style.animation = '';
+                card.classList.remove("animate-pulse");
+                card.style.animation = "";
               }, 400);
             }
           });
 
           setTimeout(() => {
-            setCards(prev => prev.map(c =>
-              c.id === firstId || c.id === secondId
-                ? { ...c, isFlipped: false }
-                : c
-            ));
+            setCards((prev) =>
+              prev.map((c) =>
+                c.id === firstId || c.id === secondId
+                  ? { ...c, isFlipped: false }
+                  : c,
+              ),
+            );
             setFlippedCards([]);
           }, 500);
         }, 1000);
@@ -189,13 +219,16 @@ export default function CardFlipGame() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getScore = () => {
     const baseScore = difficultySettings[difficulty].pairs * 100;
     const timeBonus = Math.max(0, 300 - timeElapsed);
-    const moveBonus = Math.max(0, (difficultySettings[difficulty].pairs * 2 - moves) * 10);
+    const moveBonus = Math.max(
+      0,
+      (difficultySettings[difficulty].pairs * 2 - moves) * 10,
+    );
     return baseScore + timeBonus + moveBonus;
   };
 
@@ -210,8 +243,15 @@ export default function CardFlipGame() {
               Back to Dashboard
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground">Card Flip Memory</h1>
-          <Button variant="outline" size="sm" onClick={initializeGame} className="gap-2">
+          <h1 className="text-2xl font-bold text-foreground">
+            Card Flip Memory
+          </h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={initializeGame}
+            className="gap-2"
+          >
             <RotateCcw className="h-4 w-4" />
             New Game
           </Button>
@@ -223,7 +263,9 @@ export default function CardFlipGame() {
             <CardContent className="p-4 flex items-center gap-2">
               <Timer className="h-5 w-5 text-primary" />
               <div>
-                <p className="stat-value text-lg font-bold">{formatTime(timeElapsed)}</p>
+                <p className="stat-value text-lg font-bold">
+                  {formatTime(timeElapsed)}
+                </p>
                 <p className="text-xs text-muted-foreground">Time</p>
               </div>
             </CardContent>
@@ -241,14 +283,18 @@ export default function CardFlipGame() {
             <CardContent className="p-4 flex items-center gap-2">
               <Trophy className="h-5 w-5 text-primary" />
               <div>
-                <p className="stat-value text-lg font-bold">{matches}/{difficultySettings[difficulty].pairs}</p>
+                <p className="stat-value text-lg font-bold">
+                  {matches}/{difficultySettings[difficulty].pairs}
+                </p>
                 <p className="text-xs text-muted-foreground">Matches</p>
               </div>
             </CardContent>
           </Card>
           <Card className="bg-card/50">
             <CardContent className="p-4 flex items-center gap-2">
-              <Badge variant="secondary">{difficultySettings[difficulty].name}</Badge>
+              <Badge variant="secondary">
+                {difficultySettings[difficulty].name}
+              </Badge>
             </CardContent>
           </Card>
         </div>
@@ -260,14 +306,19 @@ export default function CardFlipGame() {
               <CardTitle className="text-center">Choose Difficulty</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center gap-4">
-              {(Object.keys(difficultySettings) as Array<keyof typeof difficultySettings>).map((level) => (
+              {(
+                Object.keys(difficultySettings) as Array<
+                  keyof typeof difficultySettings
+                >
+              ).map((level) => (
                 <Button
                   key={level}
                   variant={difficulty === level ? "default" : "outline"}
                   onClick={() => setDifficulty(level)}
                   className={cn(
                     "transition-all",
-                    difficulty === level && "bg-primary text-primary-foreground"
+                    difficulty === level &&
+                      "bg-primary text-primary-foreground",
                   )}
                 >
                   {difficultySettings[level].name}
@@ -281,10 +332,13 @@ export default function CardFlipGame() {
         )}
 
         {/* Game Board */}
-        <div ref={gameGridRef} className={cn(
-          "grid gap-4 max-w-2xl mx-auto",
-          difficultySettings[difficulty].gridCols
-        )}>
+        <div
+          ref={gameGridRef}
+          className={cn(
+            "grid gap-4 max-w-2xl mx-auto",
+            difficultySettings[difficulty].gridCols,
+          )}
+        >
           {cards.map((card) => (
             <div
               key={card.id}
@@ -293,25 +347,29 @@ export default function CardFlipGame() {
               className={cn(
                 "game-card relative aspect-square cursor-pointer transition-all duration-300 transform-gpu",
                 "hover:scale-105",
-                card.isMatched && "scale-90 opacity-75"
+                card.isMatched && "scale-90 opacity-75",
               )}
             >
-              <div className={cn(
-                "w-full h-full rounded-lg transition-transform duration-500 transform-style-preserve-3d",
-                (card.isFlipped || card.isMatched) && "rotate-y-180"
-              )}>
+              <div
+                className={cn(
+                  "w-full h-full rounded-lg transition-transform duration-500 transform-style-preserve-3d",
+                  (card.isFlipped || card.isMatched) && "rotate-y-180",
+                )}
+              >
                 {/* Front (Hidden) */}
                 <div className="absolute inset-0 backface-hidden rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 border-2 border-primary/30 flex items-center justify-center">
                   <div className="w-8 h-8 rounded-full bg-primary/20 animate-pulse"></div>
                 </div>
-                
+
                 {/* Back (Revealed) */}
-                <div className={cn(
-                  "absolute inset-0 backface-hidden rotate-y-180 rounded-lg border-2 flex items-center justify-center text-6xl transition-colors",
-                  card.isMatched
-                    ? "bg-green-500/20 border-green-500/50 text-green-400"
-                    : "bg-card border-border"
-                )}>
+                <div
+                  className={cn(
+                    "absolute inset-0 backface-hidden rotate-y-180 rounded-lg border-2 flex items-center justify-center text-6xl transition-colors",
+                    card.isMatched
+                      ? "bg-green-500/20 border-green-500/50 text-green-400"
+                      : "bg-card border-border",
+                  )}
+                >
                   {card.value}
                 </div>
               </div>
@@ -325,13 +383,17 @@ export default function CardFlipGame() {
             <CardContent className="bg-card border-2 border-primary/50 rounded-lg p-8 text-center space-y-6 max-w-md mx-4">
               <div className="text-6xl">🎉</div>
               <div>
-                <h2 className="text-2xl font-bold text-primary mb-2">Congratulations!</h2>
+                <h2 className="text-2xl font-bold text-primary mb-2">
+                  Congratulations!
+                </h2>
                 <p className="text-muted-foreground">You completed the game!</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{formatTime(timeElapsed)}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {formatTime(timeElapsed)}
+                  </p>
                   <p className="text-sm text-muted-foreground">Time</p>
                 </div>
                 <div>
@@ -339,11 +401,13 @@ export default function CardFlipGame() {
                   <p className="text-sm text-muted-foreground">Moves</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-3xl font-bold text-primary">{getScore()}</p>
+                  <p className="text-3xl font-bold text-primary">
+                    {getScore()}
+                  </p>
                   <p className="text-sm text-muted-foreground">Final Score</p>
                 </div>
               </div>
-              
+
               <div className="flex gap-3">
                 <Button onClick={initializeGame} className="flex-1">
                   Play Again

@@ -1,9 +1,25 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Medal, Crown, Star, Layers, Target, Clock, Zap, Palette } from "lucide-react";
+import {
+  Trophy,
+  Medal,
+  Crown,
+  Star,
+  Layers,
+  Target,
+  Clock,
+  Zap,
+  Palette,
+} from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 
@@ -19,45 +35,154 @@ interface LeaderboardEntry {
 }
 
 const cardFlipLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, name: "MemoryMaster", score: 2850, time: "1:23", moves: 18, avatar: "🧠", streak: 15 },
-  { rank: 2, name: "FlipKing", score: 2720, time: "1:45", moves: 22, avatar: "👑", streak: 12 },
-  { rank: 3, name: "CardNinja", score: 2680, time: "1:52", moves: 24, avatar: "🥷", streak: 8 },
-  { rank: 4, name: "You", score: 2340, time: "2:15", moves: 28, avatar: "😎", isCurrentUser: true, streak: 6 },
-  { rank: 5, name: "QuickFlip", score: 2190, time: "2:03", moves: 26, avatar: "⚡", streak: 4 },
-  { rank: 6, name: "BrainPower", score: 2050, time: "2:28", moves: 32, avatar: "🔥", streak: 3 },
-  { rank: 7, name: "MemoryPro", score: 1920, time: "2:45", moves: 35, avatar: "🎯", streak: 2 },
-  { rank: 8, name: "FlipMaster", score: 1850, time: "3:02", moves: 38, avatar: "🚀", streak: 5 }
+  {
+    rank: 1,
+    name: "MemoryMaster",
+    score: 2850,
+    time: "1:23",
+    moves: 18,
+    avatar: "🧠",
+    streak: 15,
+  },
+  {
+    rank: 2,
+    name: "FlipKing",
+    score: 2720,
+    time: "1:45",
+    moves: 22,
+    avatar: "👑",
+    streak: 12,
+  },
+  {
+    rank: 3,
+    name: "CardNinja",
+    score: 2680,
+    time: "1:52",
+    moves: 24,
+    avatar: "🥷",
+    streak: 8,
+  },
+  {
+    rank: 4,
+    name: "You",
+    score: 2340,
+    time: "2:15",
+    moves: 28,
+    avatar: "😎",
+    isCurrentUser: true,
+    streak: 6,
+  },
+  {
+    rank: 5,
+    name: "QuickFlip",
+    score: 2190,
+    time: "2:03",
+    moves: 26,
+    avatar: "⚡",
+    streak: 4,
+  },
+  {
+    rank: 6,
+    name: "BrainPower",
+    score: 2050,
+    time: "2:28",
+    moves: 32,
+    avatar: "🔥",
+    streak: 3,
+  },
+  {
+    rank: 7,
+    name: "MemoryPro",
+    score: 1920,
+    time: "2:45",
+    moves: 35,
+    avatar: "🎯",
+    streak: 2,
+  },
+  {
+    rank: 8,
+    name: "FlipMaster",
+    score: 1850,
+    time: "3:02",
+    moves: 38,
+    avatar: "🚀",
+    streak: 5,
+  },
 ];
 
 const cupGameLeaderboard: LeaderboardEntry[] = [
   { rank: 1, name: "CupChampion", score: 3200, streak: 18, avatar: "🏆" },
   { rank: 2, name: "BallTracker", score: 2950, streak: 15, avatar: "👁️" },
   { rank: 3, name: "ShellMaster", score: 2800, streak: 12, avatar: "🔮" },
-  { rank: 4, name: "You", score: 2450, streak: 9, avatar: "😎", isCurrentUser: true },
+  {
+    rank: 4,
+    name: "You",
+    score: 2450,
+    streak: 9,
+    avatar: "😎",
+    isCurrentUser: true,
+  },
   { rank: 5, name: "CupHunter", score: 2200, streak: 7, avatar: "🎪" },
   { rank: 6, name: "EagleEye", score: 2100, streak: 6, avatar: "🦅" },
   { rank: 7, name: "TrackingStar", score: 1950, streak: 5, avatar: "⭐" },
-  { rank: 8, name: "CupWizard", score: 1800, streak: 4, avatar: "🧙" }
+  { rank: 8, name: "CupWizard", score: 1800, streak: 4, avatar: "🧙" },
 ];
 
 const simonSaysLeaderboard: LeaderboardEntry[] = [
   { rank: 1, name: "ColorMaster", score: 3850, streak: 24, avatar: "🌈" },
   { rank: 2, name: "SequenceKing", score: 3420, streak: 19, avatar: "👑" },
   { rank: 3, name: "PatternPro", score: 3100, streak: 16, avatar: "🎨" },
-  { rank: 4, name: "You", score: 2680, streak: 12, avatar: "😎", isCurrentUser: true },
+  {
+    rank: 4,
+    name: "You",
+    score: 2680,
+    streak: 12,
+    avatar: "😎",
+    isCurrentUser: true,
+  },
   { rank: 5, name: "RhythmAce", score: 2350, streak: 10, avatar: "🎵" },
   { rank: 6, name: "FlashGenius", score: 2120, streak: 8, avatar: "⚡" },
   { rank: 7, name: "ColorWiz", score: 1980, streak: 7, avatar: "🧙" },
-  { rank: 8, name: "SimonFan", score: 1750, streak: 6, avatar: "🎯" }
+  { rank: 8, name: "SimonFan", score: 1750, streak: 6, avatar: "🎯" },
 ];
 
 const achievements = [
-  { name: "First Win", description: "Win your first game", icon: "🎉", unlocked: true },
-  { name: "Speed Demon", description: "Complete Card Flip in under 1 minute", icon: "⚡", unlocked: false },
-  { name: "Perfect Memory", description: "Complete Card Flip without mistakes", icon: "🧠", unlocked: true },
-  { name: "Lucky Streak", description: "Get 10 correct guesses in Cup Game", icon: "🍀", unlocked: true },
-  { name: "Eagle Eye", description: "Track the ball through 20+ shuffles", icon: "👁️", unlocked: false },
-  { name: "Dedication", description: "Play 100 games", icon: "💪", unlocked: false }
+  {
+    name: "First Win",
+    description: "Win your first game",
+    icon: "🎉",
+    unlocked: true,
+  },
+  {
+    name: "Speed Demon",
+    description: "Complete Card Flip in under 1 minute",
+    icon: "⚡",
+    unlocked: false,
+  },
+  {
+    name: "Perfect Memory",
+    description: "Complete Card Flip without mistakes",
+    icon: "🧠",
+    unlocked: true,
+  },
+  {
+    name: "Lucky Streak",
+    description: "Get 10 correct guesses in Cup Game",
+    icon: "🍀",
+    unlocked: true,
+  },
+  {
+    name: "Eagle Eye",
+    description: "Track the ball through 20+ shuffles",
+    icon: "👁️",
+    unlocked: false,
+  },
+  {
+    name: "Dedication",
+    description: "Play 100 games",
+    icon: "💪",
+    unlocked: false,
+  },
 ];
 
 export default function Leaderboard() {
@@ -72,7 +197,9 @@ export default function Leaderboard() {
       case 3:
         return <Trophy className="h-5 w-5 text-amber-600" />;
       default:
-        return <span className="text-muted-foreground font-semibold">#{rank}</span>;
+        return (
+          <span className="text-muted-foreground font-semibold">#{rank}</span>
+        );
     }
   };
 
@@ -89,16 +216,22 @@ export default function Leaderboard() {
     }
   };
 
-  const LeaderboardTable = ({ data, gameType }: { data: LeaderboardEntry[], gameType: "card" | "cup" }) => (
+  const LeaderboardTable = ({
+    data,
+    gameType,
+  }: {
+    data: LeaderboardEntry[];
+    gameType: "card" | "cup";
+  }) => (
     <div className="space-y-3">
       {data.map((entry) => (
         <Card
           key={entry.rank}
           className={cn(
             "transition-all duration-200 hover:scale-[1.02]",
-            entry.isCurrentUser 
-              ? "bg-gradient-to-r from-primary/20 to-accent/20 border-primary/50 ring-1 ring-primary/30" 
-              : `bg-gradient-to-r ${getRankColor(entry.rank)}`
+            entry.isCurrentUser
+              ? "bg-gradient-to-r from-primary/20 to-accent/20 border-primary/50 ring-1 ring-primary/30"
+              : `bg-gradient-to-r ${getRankColor(entry.rank)}`,
           )}
         >
           <CardContent className="p-4">
@@ -107,19 +240,26 @@ export default function Leaderboard() {
                 <div className="flex items-center gap-2 min-w-[3rem]">
                   {getRankIcon(entry.rank)}
                 </div>
-                
+
                 <div className="text-2xl">{entry.avatar}</div>
-                
+
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className={cn(
-                      "font-semibold",
-                      entry.isCurrentUser ? "text-primary" : "text-foreground"
-                    )}>
+                    <p
+                      className={cn(
+                        "font-semibold",
+                        entry.isCurrentUser
+                          ? "text-primary"
+                          : "text-foreground",
+                      )}
+                    >
                       {entry.name}
                     </p>
                     {entry.isCurrentUser && (
-                      <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs bg-primary/20 text-primary border-primary/30"
+                      >
                         You
                       </Badge>
                     )}
@@ -153,16 +293,23 @@ export default function Leaderboard() {
 
               {entry.rank <= 3 && (
                 <div className="text-right">
-                  <Badge 
-                    variant="secondary" 
+                  <Badge
+                    variant="secondary"
                     className={cn(
                       "font-bold",
-                      entry.rank === 1 && "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-                      entry.rank === 2 && "bg-gray-400/20 text-gray-300 border-gray-400/30",
-                      entry.rank === 3 && "bg-amber-600/20 text-amber-300 border-amber-600/30"
+                      entry.rank === 1 &&
+                        "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+                      entry.rank === 2 &&
+                        "bg-gray-400/20 text-gray-300 border-gray-400/30",
+                      entry.rank === 3 &&
+                        "bg-amber-600/20 text-amber-300 border-amber-600/30",
                     )}
                   >
-                    {entry.rank === 1 ? "CHAMPION" : entry.rank === 2 ? "RUNNER-UP" : "3RD PLACE"}
+                    {entry.rank === 1
+                      ? "CHAMPION"
+                      : entry.rank === 2
+                        ? "RUNNER-UP"
+                        : "3RD PLACE"}
                   </Badge>
                 </div>
               )}
@@ -178,7 +325,9 @@ export default function Leaderboard() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-foreground">Leaderboard</h1>
-          <p className="text-muted-foreground">See how you rank against other memory masters</p>
+          <p className="text-muted-foreground">
+            See how you rank against other memory masters
+          </p>
         </div>
 
         {/* Time Filter */}
@@ -275,7 +424,8 @@ export default function Leaderboard() {
                   Your Achievements
                 </CardTitle>
                 <CardDescription>
-                  Unlock achievements by reaching milestones and completing challenges
+                  Unlock achievements by reaching milestones and completing
+                  challenges
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -285,9 +435,9 @@ export default function Leaderboard() {
                       key={achievement.name}
                       className={cn(
                         "transition-all duration-200",
-                        achievement.unlocked 
-                          ? "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30" 
-                          : "bg-card/30 border-border opacity-60"
+                        achievement.unlocked
+                          ? "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30"
+                          : "bg-card/30 border-border opacity-60",
                       )}
                     >
                       <CardContent className="p-4">
@@ -295,14 +445,21 @@ export default function Leaderboard() {
                           <div className="text-2xl">{achievement.icon}</div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-foreground">{achievement.name}</h3>
+                              <h3 className="font-semibold text-foreground">
+                                {achievement.name}
+                              </h3>
                               {achievement.unlocked && (
-                                <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-green-500/20 text-green-400 border-green-500/30"
+                                >
                                   Unlocked
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {achievement.description}
+                            </p>
                           </div>
                         </div>
                       </CardContent>
