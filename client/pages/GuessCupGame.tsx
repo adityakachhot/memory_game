@@ -282,7 +282,7 @@ export default function GuessCupGame() {
           {cups.map((cup, index) => (
             <div
               key={cup.id}
-              onClick={() => handleCupClick(index)}
+              onClick={() => handleCupClick(cup.visualPosition)}
               className={cn(
                 "relative cursor-pointer group transition-all duration-400 transform",
                 gamePhase === "guessing" && "hover:scale-105",
