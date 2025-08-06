@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RotateCcw, Trophy, Timer, Zap } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
+import anime from "animejs";
 
 interface GameCard {
   id: number;
