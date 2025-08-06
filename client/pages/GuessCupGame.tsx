@@ -1,0 +1,303 @@
+import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, RotateCcw, Trophy, Target, Zap, Play } from "lucide-react";
+import Layout from "@/components/Layout";
+import { cn } from "@/lib/utils";
+
+interface Cup {
+  id: number;
+  hasBall: boolean;
+  isLifted: boolean;
+  position: number;
+}
+
+type GamePhase = "setup" | "showing" | "shuffling" | "guessing" | "result";
+
+export default function GuessCupGame() {
+  const [cups, setCups] = useState<Cup[]>([]);
+  const [gamePhase, setGamePhase] = useState<GamePhase>("setup");
+  const [ballPosition, setBallPosition] = useState(1);
+  const [score, setScore] = useState(0);
+  const [round, setRound] = useState(1);
+  const [streak, setStreak] = useState(0);
+  const [shuffleSpeed, setShuffleSpeed] = useState(1000);
+  const [showResult, setShowResult] = useState(false);
+  const [lastGuessCorrect, setLastGuessCorrect] = useState(false);
+  const [cupCount, setCupCount] = useState(3);
+
+  const initializeGame = useCallback(() => {
+    const initialBallPos = Math.floor(Math.random() * cupCount);
+    setBallPosition(initialBallPos);
+    
+    const newCups: Cup[] = Array.from({ length: cupCount }, (_, index) => ({
+      id: index,
+      hasBall: index === initialBallPos,
+      isLifted: false,
+      position: index,
+    }));
+    
+    setCups(newCups);
+    setGamePhase("setup");
+    setShowResult(false);
+  }, [cupCount]);
+
+  useEffect(() => {
+    initializeGame();
+  }, [initializeGame]);
+
+  const startGame = () => {
+    setGamePhase("showing");
+    
+    // Show the ball for 2 seconds
+    setCups(prev => prev.map(cup => ({ ...cup, isLifted: true })));
+    
+    setTimeout(() => {
+      setCups(prev => prev.map(cup => ({ ...cup, isLifted: false })));
+      setTimeout(() => {
+        setGamePhase("shuffling");
+        performShuffle();
+      }, 500);
+    }, 2000);
+  };
+
+  const performShuffle = () => {
+    const shuffleCount = Math.min(10 + round * 2, 20);
+    let currentPositions = cups.map((_, index) => index);
+    let shuffleIndex = 0;
+
+    const shuffle = () => {
+      if (shuffleIndex >= shuffleCount) {
+        setGamePhase("guessing");
+        return;
+      }
+
+      const pos1 = Math.floor(Math.random() * cupCount);
+      let pos2 = Math.floor(Math.random() * cupCount);
+      while (pos2 === pos1) {
+        pos2 = Math.floor(Math.random() * cupCount);
+      }
+
+      // Swap positions
+      [currentPositions[pos1], currentPositions[pos2]] = [currentPositions[pos2], currentPositions[pos1]];
+      
+      // Update ball position if it was in one of the swapped cups
+      if (ballPosition === pos1) {
+        setBallPosition(pos2);
+      } else if (ballPosition === pos2) {
+        setBallPosition(pos1);
+      }
+
+      setCups(prev => {
+        const newCups = [...prev];
+        [newCups[pos1], newCups[pos2]] = [newCups[pos2], newCups[pos1]];
+        return newCups.map((cup, index) => ({
+          ...cup,
+          position: index,
+          hasBall: index === (ballPosition === pos1 ? pos2 : ballPosition === pos2 ? pos1 : ballPosition)
+        }));
+      });
+
+      shuffleIndex++;
+      setTimeout(shuffle, shuffleSpeed);
+    };
+
+    shuffle();
+  };
+
+  const handleCupClick = (cupIndex: number) => {
+    if (gamePhase !== "guessing") return;
+
+    const isCorrect = cupIndex === ballPosition;
+    setLastGuessCorrect(isCorrect);
+    setShowResult(true);
+    
+    // Lift all cups to show result
+    setCups(prev => prev.map(cup => ({ ...cup, isLifted: true })));
+    setGamePhase("result");
+
+    if (isCorrect) {
+      const roundScore = 100 + (streak * 20);
+      setScore(prev => prev + roundScore);
+      setStreak(prev => prev + 1);
+    } else {
+      setStreak(0);
+    }
+
+    setTimeout(() => {
+      nextRound();
+    }, 3000);
+  };
+
+  const nextRound = () => {
+    setRound(prev => prev + 1);
+    setShuffleSpeed(prev => Math.max(300, prev - 50)); // Increase speed each round
+    if (round % 3 === 0 && cupCount < 5) {
+      setCupCount(prev => prev + 1); // Add a cup every 3 rounds
+    }
+    initializeGame();
+  };
+
+  const resetGame = () => {
+    setScore(0);
+    setRound(1);
+    setStreak(0);
+    setShuffleSpeed(1000);
+    setCupCount(3);
+    initializeGame();
+  };
+
+  return (
+    <Layout>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <Link to="/">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold text-foreground">Guess the Cup</h1>
+          <Button variant="outline" size="sm" onClick={resetGame} className="gap-2">
+            <RotateCcw className="h-4 w-4" />
+            New Game
+          </Button>
+        </div>
+
+        {/* Game Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-lg font-bold">{score}</p>
+                <p className="text-xs text-muted-foreground">Score</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-lg font-bold">{round}</p>
+                <p className="text-xs text-muted-foreground">Round</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-lg font-bold">{streak}</p>
+                <p className="text-xs text-muted-foreground">Streak</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Badge variant="secondary">{cupCount} Cups</Badge>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Game Instructions */}
+        {gamePhase === "setup" && (
+          <Card className="bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-center">Watch the Ball!</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                Watch carefully as the ball is placed under a cup. The cups will then shuffle around. 
+                Can you track which cup has the ball?
+              </p>
+              <Button onClick={startGame} className="gap-2">
+                <Play className="h-4 w-4" />
+                Start Round {round}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Game Phase Indicator */}
+        {gamePhase !== "setup" && (
+          <Card className="bg-card/50">
+            <CardContent className="p-4">
+              <div className="text-center">
+                {gamePhase === "showing" && (
+                  <p className="text-lg font-semibold text-primary">👀 Remember where the ball is!</p>
+                )}
+                {gamePhase === "shuffling" && (
+                  <p className="text-lg font-semibold text-orange-400">🔄 Cups are shuffling...</p>
+                )}
+                {gamePhase === "guessing" && (
+                  <p className="text-lg font-semibold text-green-400">🎯 Click the cup with the ball!</p>
+                )}
+                {gamePhase === "result" && showResult && (
+                  <p className={cn(
+                    "text-lg font-semibold",
+                    lastGuessCorrect ? "text-green-400" : "text-red-400"
+                  )}>
+                    {lastGuessCorrect ? "🎉 Correct!" : "❌ Wrong!"}
+                    {lastGuessCorrect && streak > 1 && ` ${streak} in a row!`}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Game Board */}
+        <div className="flex justify-center items-end space-x-8 py-12">
+          {cups.map((cup, index) => (
+            <div
+              key={cup.id}
+              onClick={() => handleCupClick(index)}
+              className={cn(
+                "relative transition-all duration-300 cursor-pointer group",
+                gamePhase === "guessing" && "hover:scale-105",
+                gamePhase !== "guessing" && "cursor-default"
+              )}
+            >
+              {/* Ball */}
+              <div className={cn(
+                "absolute bottom-2 left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full transition-all duration-300",
+                "bg-gradient-to-br from-red-400 to-red-600 shadow-lg",
+                cup.hasBall ? "opacity-100" : "opacity-0",
+                cup.isLifted ? "z-10" : "z-0"
+              )} />
+              
+              {/* Cup */}
+              <div className={cn(
+                "w-20 h-24 relative transition-all duration-500 transform-gpu",
+                cup.isLifted && "-translate-y-8",
+                gamePhase === "shuffling" && "transition-all duration-300"
+              )}>
+                {/* Cup Body */}
+                <div className={cn(
+                  "w-full h-full rounded-t-lg transition-all duration-300",
+                  "bg-gradient-to-b from-orange-400 to-orange-600",
+                  "border-2 border-orange-500/50",
+                  "shadow-lg shadow-orange-900/20",
+                  gamePhase === "guessing" && "group-hover:from-orange-300 group-hover:to-orange-500"
+                )}>
+                  {/* Cup Highlight */}
+                  <div className="w-4 h-8 bg-orange-200/30 rounded-full absolute top-2 left-2" />
+                </div>
+                
+                {/* Cup Base */}
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-24 h-2 bg-orange-700 rounded-full opacity-50" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Game Table */}
+        <div className="h-4 bg-gradient-to-r from-amber-900/20 via-amber-800/30 to-amber-900/20 rounded-lg mx-auto max-w-2xl" />
+      </div>
+    </Layout>
+  );
+}
