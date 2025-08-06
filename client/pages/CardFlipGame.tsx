@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RotateCcw, Trophy, Timer, Zap } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
-import anime from "animejs";
+import anime from "animejs/lib/anime.es.js";
 
 interface GameCard {
   id: number;
