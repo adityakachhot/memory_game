@@ -250,6 +250,23 @@ export default function Leaderboard() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="simon-says" className="space-y-4">
+            <Card className="bg-card/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5 text-primary" />
+                  Simon Says - Top Players
+                </CardTitle>
+                <CardDescription>
+                  Rankings based on longest sequences and highest scores
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LeaderboardTable data={simonSaysLeaderboard} gameType="cup" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="achievements" className="space-y-4">
             <Card className="bg-card/50">
               <CardHeader>
