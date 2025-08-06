@@ -220,12 +220,12 @@ export default function CardFlipGame() {
         </div>
 
         {/* Game Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-card/50">
             <CardContent className="p-4 flex items-center gap-2">
               <Timer className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-lg font-bold">{formatTime(timeElapsed)}</p>
+                <p className="stat-value text-lg font-bold">{formatTime(timeElapsed)}</p>
                 <p className="text-xs text-muted-foreground">Time</p>
               </div>
             </CardContent>
@@ -234,7 +234,7 @@ export default function CardFlipGame() {
             <CardContent className="p-4 flex items-center gap-2">
               <Zap className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-lg font-bold">{moves}</p>
+                <p className="stat-value text-lg font-bold">{moves}</p>
                 <p className="text-xs text-muted-foreground">Moves</p>
               </div>
             </CardContent>
@@ -243,7 +243,7 @@ export default function CardFlipGame() {
             <CardContent className="p-4 flex items-center gap-2">
               <Trophy className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-lg font-bold">{matches}/{difficultySettings[difficulty].pairs}</p>
+                <p className="stat-value text-lg font-bold">{matches}/{difficultySettings[difficulty].pairs}</p>
                 <p className="text-xs text-muted-foreground">Matches</p>
               </div>
             </CardContent>
