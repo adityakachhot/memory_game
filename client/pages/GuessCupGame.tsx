@@ -305,10 +305,16 @@ export default function GuessCupGame() {
                   "border-2 border-orange-500/50",
                   "shadow-lg shadow-orange-900/20",
                   gamePhase === "guessing" && "group-hover:from-orange-300 group-hover:to-orange-500",
-                  gamePhase === "shuffling" && "shadow-xl shadow-orange-900/40"
+                  gamePhase === "shuffling" && "shadow-2xl shadow-orange-900/60 scale-105"
                 )}>
                   {/* Cup Highlight */}
                   <div className="w-4 h-8 bg-orange-200/30 rounded-full absolute top-2 left-2" />
+                  {/* Cup Number for easier tracking during shuffle */}
+                  {gamePhase === "shuffling" && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-white/90 rounded-full flex items-center justify-center text-xs font-bold text-orange-800">
+                      {index + 1}
+                    </div>
+                  )}
                 </div>
 
                 {/* Cup Base */}
