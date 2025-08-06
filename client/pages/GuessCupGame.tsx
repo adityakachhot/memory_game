@@ -12,6 +12,7 @@ interface Cup {
   hasBall: boolean;
   isLifted: boolean;
   position: number;
+  xOffset: number;
 }
 
 type GamePhase = "setup" | "showing" | "shuffling" | "guessing" | "result";
@@ -31,14 +32,15 @@ export default function GuessCupGame() {
   const initializeGame = useCallback(() => {
     const initialBallPos = Math.floor(Math.random() * cupCount);
     setBallPosition(initialBallPos);
-    
+
     const newCups: Cup[] = Array.from({ length: cupCount }, (_, index) => ({
       id: index,
       hasBall: index === initialBallPos,
       isLifted: false,
       position: index,
+      xOffset: 0,
     }));
-    
+
     setCups(newCups);
     setGamePhase("setup");
     setShowResult(false);
