@@ -61,6 +61,33 @@ export default function CardFlipGame() {
     initializeGame();
   }, [initializeGame]);
 
+  // Animate cards entrance when they're initialized
+  useEffect(() => {
+    if (cards.length > 0 && gameGridRef.current) {
+      anime({
+        targets: gameGridRef.current.querySelectorAll('.game-card'),
+        scale: [0, 1],
+        rotateY: [180, 0],
+        opacity: [0, 1],
+        duration: 800,
+        delay: anime.stagger(100, {start: 500}),
+        easing: 'easeOutBack'
+      });
+    }
+  }, [cards.length, difficulty]);
+
+  // Animate stats updates
+  useEffect(() => {
+    if (statsRef.current && gameStarted) {
+      anime({
+        targets: statsRef.current.querySelectorAll('.stat-value'),
+        scale: [1, 1.2, 1],
+        duration: 300,
+        easing: 'easeOutQuad'
+      });
+    }
+  }, [moves, matches, timeElapsed]);
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (gameStarted && !gameCompleted) {
