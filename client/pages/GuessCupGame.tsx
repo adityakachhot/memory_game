@@ -66,12 +66,13 @@ export default function GuessCupGame() {
   };
 
   const performShuffle = () => {
-    const shuffleCount = Math.min(10 + round * 2, 20);
-    let currentPositions = cups.map((_, index) => index);
+    const shuffleCount = Math.min(8 + round, 15);
     let shuffleIndex = 0;
 
     const shuffle = () => {
       if (shuffleIndex >= shuffleCount) {
+        // Reset all offsets and finalize positions
+        setCups(prev => prev.map(cup => ({ ...cup, xOffset: 0 })));
         setGamePhase("guessing");
         return;
       }
@@ -82,28 +83,44 @@ export default function GuessCupGame() {
         pos2 = Math.floor(Math.random() * cupCount);
       }
 
-      // Swap positions
-      [currentPositions[pos1], currentPositions[pos2]] = [currentPositions[pos2], currentPositions[pos1]];
-      
-      // Update ball position if it was in one of the swapped cups
-      if (ballPosition === pos1) {
-        setBallPosition(pos2);
-      } else if (ballPosition === pos2) {
-        setBallPosition(pos1);
-      }
+      // Calculate the distance for animation (each cup is about 112px apart including spacing)
+      const cupSpacing = 112;
+      const distance = (pos2 - pos1) * cupSpacing;
 
-      setCups(prev => {
-        const newCups = [...prev];
-        [newCups[pos1], newCups[pos2]] = [newCups[pos2], newCups[pos1]];
-        return newCups.map((cup, index) => ({
-          ...cup,
-          position: index,
-          hasBall: index === (ballPosition === pos1 ? pos2 : ballPosition === pos2 ? pos1 : ballPosition)
-        }));
-      });
+      // First, animate the cups moving
+      setCups(prev => prev.map((cup, index) => {
+        if (index === pos1) {
+          return { ...cup, xOffset: distance };
+        } else if (index === pos2) {
+          return { ...cup, xOffset: -distance };
+        }
+        return cup;
+      }));
 
-      shuffleIndex++;
-      setTimeout(shuffle, shuffleSpeed);
+      // After animation completes, actually swap the cups and reset offsets
+      setTimeout(() => {
+        // Update ball position if it was in one of the swapped cups
+        if (ballPosition === pos1) {
+          setBallPosition(pos2);
+        } else if (ballPosition === pos2) {
+          setBallPosition(pos1);
+        }
+
+        setCups(prev => {
+          const newCups = [...prev];
+          // Swap the cups
+          [newCups[pos1], newCups[pos2]] = [newCups[pos2], newCups[pos1]];
+          return newCups.map((cup, index) => ({
+            ...cup,
+            position: index,
+            xOffset: 0,
+            hasBall: index === (ballPosition === pos1 ? pos2 : ballPosition === pos2 ? pos1 : ballPosition)
+          }));
+        });
+
+        shuffleIndex++;
+        setTimeout(shuffle, 200); // Shorter delay between shuffles
+      }, 400); // Time for animation to complete
     };
 
     shuffle();
