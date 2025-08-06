@@ -242,10 +242,10 @@ export default function Index() {
       <div className="space-y-8 overflow-hidden">
         {/* Hero Section */}
         <div ref={heroRef} className="text-center space-y-4 animate-fade-in-up">
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-pulse-slow">
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-float animate-glow">
             Memory Master
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto animation-delay-300 animate-fade-in-up">
             Challenge your mind with our collection of memory games. Train your brain, improve your focus, and compete with others.
           </p>
         </div>
