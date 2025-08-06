@@ -53,16 +53,16 @@ export default function GuessCupGame() {
   const startGame = () => {
     setGamePhase("showing");
     
-    // Show the ball for 2 seconds
+    // Show the ball for 3 seconds
     setCups(prev => prev.map(cup => ({ ...cup, isLifted: true })));
-    
+
     setTimeout(() => {
       setCups(prev => prev.map(cup => ({ ...cup, isLifted: false })));
       setTimeout(() => {
         setGamePhase("shuffling");
         performShuffle();
-      }, 500);
-    }, 2000);
+      }, 1000); // Longer pause before shuffling
+    }, 3000); // Show ball for longer
   };
 
   const performShuffle = () => {
