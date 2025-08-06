@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Layers, Trophy, Brain, Palette } from "lucide-react";
 import Layout from "@/components/Layout";
-import anime from "animejs";
+import anime from "animejs/lib/anime.es.js";
 
 const games = [
   {
