@@ -27,6 +27,9 @@ export default function CardFlipGame() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
 
+  const gameGridRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+
   const difficultySettings = {
     easy: { pairs: 6, gridCols: "grid-cols-3", name: "Easy" },
     medium: { pairs: 8, gridCols: "grid-cols-4", name: "Medium" },
