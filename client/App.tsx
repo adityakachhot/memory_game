@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CardFlipGame from "./pages/CardFlipGame";
 import GuessCupGame from "./pages/GuessCupGame";
+import SimonSaysGame from "./pages/SimonSaysGame";
 import Settings from "./pages/Settings";
 import Leaderboard from "./pages/Leaderboard";
 
