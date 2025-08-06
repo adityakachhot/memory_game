@@ -106,15 +106,13 @@ export default function CardFlipGame() {
     const card = cards.find(c => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2) return;
 
-    // Animate card click
-    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+    // Animate card click with CSS
+    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`) as HTMLElement;
     if (cardElement) {
-      anime({
-        targets: cardElement,
-        scale: [1, 0.95, 1],
-        duration: 200,
-        easing: 'easeOutQuad'
-      });
+      cardElement.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        cardElement.style.transform = 'scale(1)';
+      }, 100);
     }
 
     const newFlippedCards = [...flippedCards, cardId];
