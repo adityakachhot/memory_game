@@ -320,7 +320,7 @@ export default function GuessCupGame() {
                   {/* Cup Number for easier tracking during shuffle */}
                   {gamePhase === "shuffling" && (
                     <div className="absolute top-1 right-1 w-5 h-5 bg-white/90 rounded-full flex items-center justify-center text-xs font-bold text-orange-800">
-                      {index + 1}
+                      {cup.visualPosition + 1}
                     </div>
                   )}
                 </div>
