@@ -66,26 +66,26 @@ export default function GuessCupGame() {
   };
 
   const performShuffle = () => {
-    const shuffleCount = Math.min(8 + round, 15);
+    const shuffleCount = Math.min(4 + Math.floor(round / 2), 8); // Fewer, slower shuffles
     let shuffleIndex = 0;
+    let currentBallPosition = ballPosition;
 
     const shuffle = () => {
       if (shuffleIndex >= shuffleCount) {
         // Reset all offsets and finalize positions
         setCups(prev => prev.map(cup => ({ ...cup, xOffset: 0 })));
+        setBallPosition(currentBallPosition);
         setGamePhase("guessing");
         return;
       }
 
-      const pos1 = Math.floor(Math.random() * cupCount);
-      let pos2 = Math.floor(Math.random() * cupCount);
-      while (pos2 === pos1) {
-        pos2 = Math.floor(Math.random() * cupCount);
-      }
+      // Only swap adjacent cups for easier tracking
+      const pos1 = Math.floor(Math.random() * (cupCount - 1));
+      const pos2 = pos1 + 1;
 
       // Calculate the distance for animation (each cup is about 112px apart including spacing)
       const cupSpacing = 112;
-      const distance = (pos2 - pos1) * cupSpacing;
+      const distance = cupSpacing;
 
       // First, animate the cups moving
       setCups(prev => prev.map((cup, index) => {
@@ -97,15 +97,15 @@ export default function GuessCupGame() {
         return cup;
       }));
 
+      // Update ball position tracking
+      if (currentBallPosition === pos1) {
+        currentBallPosition = pos2;
+      } else if (currentBallPosition === pos2) {
+        currentBallPosition = pos1;
+      }
+
       // After animation completes, actually swap the cups and reset offsets
       setTimeout(() => {
-        // Update ball position if it was in one of the swapped cups
-        if (ballPosition === pos1) {
-          setBallPosition(pos2);
-        } else if (ballPosition === pos2) {
-          setBallPosition(pos1);
-        }
-
         setCups(prev => {
           const newCups = [...prev];
           // Swap the cups
@@ -114,13 +114,13 @@ export default function GuessCupGame() {
             ...cup,
             position: index,
             xOffset: 0,
-            hasBall: index === (ballPosition === pos1 ? pos2 : ballPosition === pos2 ? pos1 : ballPosition)
+            hasBall: index === currentBallPosition
           }));
         });
 
         shuffleIndex++;
-        setTimeout(shuffle, 200); // Shorter delay between shuffles
-      }, 400); // Time for animation to complete
+        setTimeout(shuffle, 800); // Longer delay between shuffles for easier tracking
+      }, 800); // Longer animation time for smoother movement
     };
 
     shuffle();
@@ -282,7 +282,7 @@ export default function GuessCupGame() {
               )}
               style={{
                 transform: `translateX(${cup.xOffset}px)`,
-                transition: gamePhase === "shuffling" ? "transform 400ms ease-in-out" : "transform 300ms ease"
+                transition: gamePhase === "shuffling" ? "transform 800ms ease-in-out" : "transform 300ms ease"
               }}
             >
               {/* Ball */}
