@@ -276,10 +276,14 @@ export default function GuessCupGame() {
               key={cup.id}
               onClick={() => handleCupClick(index)}
               className={cn(
-                "relative transition-all duration-300 cursor-pointer group",
+                "relative cursor-pointer group transition-all duration-400 transform",
                 gamePhase === "guessing" && "hover:scale-105",
                 gamePhase !== "guessing" && "cursor-default"
               )}
+              style={{
+                transform: `translateX(${cup.xOffset}px)`,
+                transition: gamePhase === "shuffling" ? "transform 400ms ease-in-out" : "transform 300ms ease"
+              }}
             >
               {/* Ball */}
               <div className={cn(
@@ -288,12 +292,11 @@ export default function GuessCupGame() {
                 cup.hasBall ? "opacity-100" : "opacity-0",
                 cup.isLifted ? "z-10" : "z-0"
               )} />
-              
+
               {/* Cup */}
               <div className={cn(
                 "w-20 h-24 relative transition-all duration-500 transform-gpu",
-                cup.isLifted && "-translate-y-8",
-                gamePhase === "shuffling" && "transition-all duration-300"
+                cup.isLifted && "-translate-y-8"
               )}>
                 {/* Cup Body */}
                 <div className={cn(
@@ -301,12 +304,13 @@ export default function GuessCupGame() {
                   "bg-gradient-to-b from-orange-400 to-orange-600",
                   "border-2 border-orange-500/50",
                   "shadow-lg shadow-orange-900/20",
-                  gamePhase === "guessing" && "group-hover:from-orange-300 group-hover:to-orange-500"
+                  gamePhase === "guessing" && "group-hover:from-orange-300 group-hover:to-orange-500",
+                  gamePhase === "shuffling" && "shadow-xl shadow-orange-900/40"
                 )}>
                   {/* Cup Highlight */}
                   <div className="w-4 h-8 bg-orange-200/30 rounded-full absolute top-2 left-2" />
                 </div>
-                
+
                 {/* Cup Base */}
                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-24 h-2 bg-orange-700 rounded-full opacity-50" />
               </div>
