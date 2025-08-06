@@ -180,27 +180,42 @@
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
+  animation: fade-in-up calc(0.8s * var(--animation-speed-multiplier)) ease-out forwards;
   opacity: 0;
 }
 
 .animate-bounce-gentle {
-  animation: bounce-gentle 3s ease-in-out infinite;
-  animation-delay: 2s;
+  animation: bounce-gentle calc(3s * var(--animation-speed-multiplier)) ease-in-out infinite;
+  animation-delay: calc(2s * var(--animation-speed-multiplier));
 }
 
 .animate-pulse-slow {
-  animation: pulse-slow 4s ease-in-out infinite;
-  animation-delay: 1s;
+  animation: pulse-slow calc(4s * var(--animation-speed-multiplier)) ease-in-out infinite;
+  animation-delay: calc(1s * var(--animation-speed-multiplier));
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
-  animation-delay: 2s;
+  animation: float calc(6s * var(--animation-speed-multiplier)) ease-in-out infinite;
+  animation-delay: calc(2s * var(--animation-speed-multiplier));
 }
 
 .animate-glow {
-  animation: glow 2s ease-in-out infinite;
+  animation: glow calc(2s * var(--animation-speed-multiplier)) ease-in-out infinite;
+}
+
+/* Animation speed control classes */
+.animation-none * {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+}
+
+.animation-slow {
+  --animation-speed-multiplier: 2;
+}
+
+.animation-fast {
+  --animation-speed-multiplier: 0.5;
 }
 
 .animation-delay-300 {
