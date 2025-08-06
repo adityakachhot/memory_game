@@ -57,6 +57,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        game: {
+          card: "hsl(263 70% 50%)",
+          "card-flip": "hsl(263 85% 60%)",
+          "card-matched": "hsl(120 60% 50%)",
+          cup: "hsl(30 80% 50%)",
+          "cup-hover": "hsl(30 90% 60%)",
+          ball: "hsl(0 80% 60%)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
