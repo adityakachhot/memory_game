@@ -346,47 +346,6 @@ export default function Index() {
         </section>
       </div>
 
-      <style jsx>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes bounce-gentle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-        
-        @keyframes pulse-slow {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-        }
-        
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .animate-bounce-gentle {
-          animation: bounce-gentle 3s ease-in-out infinite;
-          animation-delay: 2s;
-        }
-        
-        .animate-pulse-slow {
-          animation: pulse-slow 4s ease-in-out infinite;
-          animation-delay: 1s;
-        }
-        
-        .animation-delay-300 { animation-delay: 300ms; }
-        .animation-delay-600 { animation-delay: 600ms; }
-        .animation-delay-1200 { animation-delay: 1200ms; }
-      `}</style>
     </Layout>
   );
 }
