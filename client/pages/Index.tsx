@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,202 +45,11 @@ const stats = [
 ];
 
 export default function Index() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const gamesRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Try to load anime.js and run animations
-    const runAnimations = async () => {
-      try {
-        const anime = await import("animejs");
-        
-        // Set initial states for animations
-        if (heroRef.current) {
-          anime.default.set(heroRef.current.querySelectorAll('h1, p'), {
-            translateY: 50,
-            opacity: 0
-          });
-        }
-
-        if (statsRef.current) {
-          anime.default.set(statsRef.current.querySelectorAll('.stat-card'), {
-            translateY: 30,
-            opacity: 0,
-            scale: 0.8
-          });
-        }
-
-        if (gamesRef.current) {
-          anime.default.set(gamesRef.current.querySelectorAll('.game-card'), {
-            translateY: 50,
-            opacity: 0,
-            scale: 0.9,
-            rotateX: -10
-          });
-        }
-
-        if (ctaRef.current) {
-          anime.default.set(ctaRef.current.querySelectorAll('h3, p, .cta-button'), {
-            translateY: 30,
-            opacity: 0
-          });
-        }
-
-        // Start entrance animations
-        const timeline = anime.default.timeline({
-          easing: 'easeOutExpo',
-          duration: 1000
-        });
-
-        // Hero section animation
-        timeline.add({
-          targets: heroRef.current?.querySelector('h1'),
-          translateY: [50, 0],
-          opacity: [0, 1],
-          duration: 1200,
-          easing: 'easeOutBack'
-        }).add({
-          targets: heroRef.current?.querySelector('p'),
-          translateY: [30, 0],
-          opacity: [0, 1],
-          duration: 800,
-          offset: '-=800'
-        });
-
-        // Stats cards staggered animation
-        timeline.add({
-          targets: statsRef.current?.querySelectorAll('.stat-card'),
-          translateY: [30, 0],
-          opacity: [0, 1],
-          scale: [0.8, 1],
-          duration: 800,
-          delay: anime.default.stagger(150),
-          offset: '-=400'
-        });
-
-        // Game cards with advanced staggered animation
-        timeline.add({
-          targets: gamesRef.current?.querySelectorAll('.game-card'),
-          translateY: [50, 0],
-          opacity: [0, 1],
-          scale: [0.9, 1],
-          rotateX: [-10, 0],
-          duration: 1000,
-          delay: anime.default.stagger(200, {start: 300}),
-          offset: '-=600'
-        });
-
-        // CTA section
-        timeline.add({
-          targets: ctaRef.current?.querySelectorAll('h3, p'),
-          translateY: [30, 0],
-          opacity: [0, 1],
-          duration: 600,
-          delay: anime.default.stagger(100),
-          offset: '-=400'
-        }).add({
-          targets: ctaRef.current?.querySelectorAll('.cta-button'),
-          translateY: [20, 0],
-          opacity: [0, 1],
-          scale: [0.9, 1],
-          duration: 500,
-          delay: anime.default.stagger(100),
-          offset: '-=300'
-        });
-
-        // Add floating animation to hero elements
-        anime.default({
-          targets: heroRef.current?.querySelector('h1'),
-          translateY: [-5, 5],
-          duration: 3000,
-          direction: 'alternate',
-          loop: true,
-          easing: 'easeInOutSine',
-          delay: 2000
-        });
-
-        // Sparkle animation for stats
-        anime.default({
-          targets: statsRef.current?.querySelectorAll('.stat-icon'),
-          scale: [1, 1.1, 1],
-          rotate: [0, 5, 0],
-          duration: 2000,
-          delay: anime.default.stagger(500, {start: 3000}),
-          loop: true,
-          direction: 'alternate',
-          easing: 'easeInOutQuad'
-        });
-
-      } catch (error) {
-        console.log("Anime.js not available, using CSS animations");
-        // Add CSS animation classes as fallback
-        if (heroRef.current) {
-          heroRef.current.classList.add('animate-fade-in-up');
-        }
-        if (statsRef.current) {
-          statsRef.current.classList.add('animate-fade-in-up-delay');
-        }
-        if (gamesRef.current) {
-          gamesRef.current.classList.add('animate-fade-in-up-delay-2');
-        }
-      }
-    };
-
-    runAnimations();
-  }, []);
-
-  const handleGameCardHover = async (e: React.MouseEvent<HTMLDivElement>) => {
-    try {
-      const anime = await import("animejs");
-      
-      anime.default({
-        targets: e.currentTarget,
-        scale: 1.05,
-        translateY: -10,
-        boxShadow: '0 20px 40px rgba(139, 92, 246, 0.3)',
-        duration: 300,
-        easing: 'easeOutQuad'
-      });
-
-      // Animate the icon
-      anime.default({
-        targets: e.currentTarget.querySelector('.game-icon'),
-        rotate: 360,
-        scale: [1, 1.2, 1],
-        duration: 600,
-        easing: 'easeOutBack'
-      });
-    } catch (error) {
-      // Fallback to CSS
-      e.currentTarget.style.transform = 'scale(1.05) translateY(-10px)';
-    }
-  };
-
-  const handleGameCardLeave = async (e: React.MouseEvent<HTMLDivElement>) => {
-    try {
-      const anime = await import("animejs");
-      
-      anime.default({
-        targets: e.currentTarget,
-        scale: 1,
-        translateY: 0,
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        duration: 300,
-        easing: 'easeOutQuad'
-      });
-    } catch (error) {
-      // Fallback to CSS
-      e.currentTarget.style.transform = 'scale(1) translateY(0)';
-    }
-  };
-
   return (
     <Layout>
       <div className="space-y-8 overflow-hidden">
         {/* Hero Section */}
-        <div ref={heroRef} className="text-center space-y-4 animate-fade-in-up">
+        <div className="text-center space-y-4 animate-fade-in-up">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-float animate-glow">
             Memory Master
           </h1>
@@ -251,21 +59,21 @@ export default function Index() {
         </div>
 
         {/* Stats Overview */}
-        <div ref={statsRef} className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in-up animation-delay-300">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animation-delay-600">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <Card 
                 key={stat.label} 
-                className="stat-card bg-card/50 border-border cursor-pointer transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:shadow-lg"
-                style={{ animationDelay: `${index * 150}ms` }}
+                className="stat-card bg-card/50 border-border cursor-pointer transition-all duration-500 hover:bg-card/70 hover:scale-105 hover:shadow-xl hover:shadow-primary/20 animate-fade-in-up"
+                style={{ animationDelay: `${600 + index * 150}ms` }}
               >
                 <CardContent className="p-6 flex items-center gap-4">
-                  <div className="stat-icon p-3 rounded-lg bg-primary/10 animate-bounce-gentle">
+                  <div className="stat-icon p-3 rounded-lg bg-primary/10 animate-bounce-gentle hover:animate-pulse transition-all duration-300 hover:bg-primary/20 hover:scale-110">
                     <Icon className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                    <p className="text-2xl font-bold text-foreground hover:text-primary transition-colors">{stat.value}</p>
                     <p className="text-sm text-muted-foreground">{stat.label}</p>
                   </div>
                 </CardContent>
@@ -276,44 +84,42 @@ export default function Index() {
 
         {/* Game Selection */}
         <section className="space-y-6">
-          <div className="text-center animate-fade-in-up animation-delay-600">
-            <h2 className="text-3xl font-bold text-foreground mb-2">Choose Your Game</h2>
+          <div className="text-center animate-fade-in-up animation-delay-900">
+            <h2 className="text-3xl font-bold text-foreground mb-2 hover:scale-105 transition-transform duration-300">Choose Your Game</h2>
             <p className="text-muted-foreground">Select a memory game to start training your brain</p>
           </div>
 
-          <div ref={gamesRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {games.map((game, index) => {
               const Icon = game.icon;
               return (
                 <Card
                   key={game.id}
-                  className={`game-card group cursor-pointer overflow-hidden bg-gradient-to-br ${game.color} border-2 ${game.borderColor} transition-all duration-500 hover:scale-105 hover:-translate-y-2 hover:shadow-2xl animate-fade-in-up`}
-                  style={{ animationDelay: `${800 + index * 200}ms` }}
-                  onMouseEnter={handleGameCardHover}
-                  onMouseLeave={handleGameCardLeave}
+                  className={`game-card group cursor-pointer overflow-hidden bg-gradient-to-br ${game.color} border-2 ${game.borderColor} transition-all duration-700 hover:scale-105 hover:-translate-y-3 hover:shadow-2xl hover:shadow-primary/30 animate-fade-in-up hover:border-primary/50 transform-gpu`}
+                  style={{ animationDelay: `${1100 + index * 200}ms` }}
                 >
                   <CardHeader className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="game-icon p-3 rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
-                        <Icon className="h-8 w-8 text-primary" />
+                      <div className="game-icon p-3 rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-all duration-500 group-hover:rotate-12 group-hover:scale-125 animate-pulse-slow">
+                        <Icon className="h-8 w-8 text-primary group-hover:text-primary-foreground transition-colors" />
                       </div>
-                      <Badge variant="secondary" className="bg-secondary/80 group-hover:bg-primary/20 transition-colors">
+                      <Badge variant="secondary" className="bg-secondary/80 group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
                         {game.difficulty}
                       </Badge>
                     </div>
-                    <div>
-                      <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
+                    <div className="transform transition-transform duration-300 group-hover:translate-x-1">
+                      <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors duration-300">
                         {game.title}
                       </CardTitle>
-                      <CardDescription className="text-muted-foreground mt-2">
+                      <CardDescription className="text-muted-foreground mt-2 group-hover:text-foreground transition-colors">
                         {game.description}
                       </CardDescription>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
                     <Link to={game.href}>
-                      <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 group-hover:scale-105">
-                        Play Now
+                      <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg transform-gpu">
+                        <span className="group-hover:animate-pulse">Play Now</span>
                       </Button>
                     </Link>
                   </CardContent>
@@ -324,28 +130,35 @@ export default function Index() {
         </section>
 
         {/* Call to Action */}
-        <section ref={ctaRef} className="text-center space-y-4 py-8 animate-fade-in-up animation-delay-1200">
-          <h3 className="text-2xl font-bold text-foreground">Ready to Challenge Yourself?</h3>
+        <section className="text-center space-y-4 py-8 animate-fade-in-up animation-delay-1200">
+          <h3 className="text-2xl font-bold text-foreground hover:scale-105 transition-transform duration-300">Ready to Challenge Yourself?</h3>
           <p className="text-muted-foreground max-w-md mx-auto">
             Start with any game and work your way up the leaderboard. Each game is designed to improve different aspects of your memory.
           </p>
           <div className="flex gap-4 justify-center">
             <Link to="/leaderboard">
-              <Button variant="outline" className="cta-button gap-2 hover:scale-105 transition-transform duration-200">
-                <Trophy className="h-4 w-4" />
+              <Button variant="outline" className="cta-button gap-2 hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:bg-primary/10 hover:border-primary/50 animate-glow">
+                <Trophy className="h-4 w-4 transition-transform group-hover:rotate-12" />
                 View Leaderboard
               </Button>
             </Link>
             <Link to="/settings">
-              <Button variant="outline" className="cta-button gap-2 hover:scale-105 transition-transform duration-200">
-                <Brain className="h-4 w-4" />
+              <Button variant="outline" className="cta-button gap-2 hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:bg-primary/10 hover:border-primary/50">
+                <Brain className="h-4 w-4 transition-transform group-hover:bounce" />
                 Game Settings
               </Button>
             </Link>
           </div>
         </section>
-      </div>
 
+        {/* Floating Elements */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-20 left-10 w-2 h-2 bg-primary/30 rounded-full animate-float" style={{ animationDelay: '0s', animationDuration: '6s' }}></div>
+          <div className="absolute top-40 right-20 w-3 h-3 bg-accent/20 rounded-full animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}></div>
+          <div className="absolute bottom-40 left-20 w-2 h-2 bg-primary/20 rounded-full animate-float" style={{ animationDelay: '4s', animationDuration: '7s' }}></div>
+          <div className="absolute bottom-20 right-10 w-4 h-4 bg-accent/10 rounded-full animate-float" style={{ animationDelay: '1s', animationDuration: '5s' }}></div>
+        </div>
+      </div>
     </Layout>
   );
 }
