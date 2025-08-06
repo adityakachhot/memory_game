@@ -83,49 +83,40 @@ export default function GuessCupGame() {
       const pos1 = Math.floor(Math.random() * (cupCount - 1));
       const pos2 = pos1 + 1;
 
-      // Start the swap animation by lifting cups and marking them as moving
-      setCups(prev => prev.map((cup, index) => {
-        if (index === pos1 || index === pos2) {
-          return { ...cup, isLifted: true, isMoving: true };
-        }
-        return cup;
-      }));
+      // Start the swap animation by marking cups as moving (no lifting to keep ball hidden)
+      setCups(prev => {
+        const newCups = [...prev];
+        // Find cups at the positions we want to swap
+        const cup1Index = newCups.findIndex(cup => cup.visualPosition === pos1);
+        const cup2Index = newCups.findIndex(cup => cup.visualPosition === pos2);
 
-      // After lifting, start the position swap
+        // Mark them as moving and swap their visual positions
+        newCups[cup1Index].isMoving = true;
+        newCups[cup2Index].isMoving = true;
+        newCups[cup1Index].visualPosition = pos2;
+        newCups[cup2Index].visualPosition = pos1;
+
+        return newCups;
+      });
+
+      // Update ball position tracking
+      if (currentBallPosition === pos1) {
+        currentBallPosition = pos2;
+      } else if (currentBallPosition === pos2) {
+        currentBallPosition = pos1;
+      }
+
+      // After swap animation completes, reset moving state
       setTimeout(() => {
-        setCups(prev => {
-          const newCups = [...prev];
-          // Find cups at the positions we want to swap
-          const cup1Index = newCups.findIndex(cup => cup.visualPosition === pos1);
-          const cup2Index = newCups.findIndex(cup => cup.visualPosition === pos2);
+        setCups(prev => prev.map(cup => ({
+          ...cup,
+          isMoving: false,
+          hasBall: cup.visualPosition === currentBallPosition
+        })));
 
-          // Swap their visual positions
-          newCups[cup1Index].visualPosition = pos2;
-          newCups[cup2Index].visualPosition = pos1;
-
-          return newCups;
-        });
-
-        // Update ball position tracking
-        if (currentBallPosition === pos1) {
-          currentBallPosition = pos2;
-        } else if (currentBallPosition === pos2) {
-          currentBallPosition = pos1;
-        }
-
-        // After swap completes, lower the cups
-        setTimeout(() => {
-          setCups(prev => prev.map(cup => ({
-            ...cup,
-            isLifted: false,
-            isMoving: false,
-            hasBall: cup.visualPosition === currentBallPosition
-          })));
-
-          shuffleIndex++;
-          setTimeout(shuffle, 600); // Pause between shuffles
-        }, 200); // Time for position swap
-      }, 300); // Time for lifting
+        shuffleIndex++;
+        setTimeout(shuffle, 600); // Pause between shuffles
+      }, 600); // Time for position swap animation
     };
 
     shuffle();
