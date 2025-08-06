@@ -21,10 +21,20 @@ const games = [
     title: "Guess the Cup",
     description: "Watch the ball hide under a cup, then track it as cups shuffle. Can you find the ball?",
     icon: Trophy,
-    difficulty: "Medium", 
+    difficulty: "Medium",
     color: "from-orange-600/20 to-orange-800/20",
     borderColor: "border-orange-500/30",
     href: "/game/guess-cup"
+  },
+  {
+    id: "simon-says",
+    title: "Simon Says",
+    description: "Watch the color sequence flash, then repeat it perfectly. Each round adds a new color to remember!",
+    icon: Palette,
+    difficulty: "Hard",
+    color: "from-blue-600/20 to-indigo-800/20",
+    borderColor: "border-blue-500/30",
+    href: "/game/simon-says"
   }
 ];
 
