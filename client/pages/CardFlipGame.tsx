@@ -106,29 +106,54 @@ export default function CardFlipGame() {
 
   const handleCardClick = (cardId: number) => {
     if (!gameStarted) setGameStarted(true);
-    
+
     const card = cards.find(c => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2) return;
+
+    // Animate card click
+    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+    if (cardElement) {
+      anime({
+        targets: cardElement,
+        scale: [1, 0.95, 1],
+        duration: 200,
+        easing: 'easeOutQuad'
+      });
+    }
 
     const newFlippedCards = [...flippedCards, cardId];
     setFlippedCards(newFlippedCards);
 
-    setCards(prev => prev.map(c => 
+    setCards(prev => prev.map(c =>
       c.id === cardId ? { ...c, isFlipped: true } : c
     ));
 
     if (newFlippedCards.length === 2) {
       setMoves(prev => prev + 1);
-      
+
       const [firstId, secondId] = newFlippedCards;
       const firstCard = cards.find(c => c.id === firstId);
       const secondCard = cards.find(c => c.id === secondId);
 
       if (firstCard?.value === secondCard?.value) {
-        // Match found
+        // Match found - celebrate!
         setTimeout(() => {
-          setCards(prev => prev.map(c => 
-            c.id === firstId || c.id === secondId 
+          const matchedCards = [
+            document.querySelector(`[data-card-id="${firstId}"]`),
+            document.querySelector(`[data-card-id="${secondId}"]`)
+          ];
+
+          // Celebration animation
+          anime({
+            targets: matchedCards,
+            scale: [1, 1.1, 1],
+            rotateZ: [0, 5, -5, 0],
+            duration: 600,
+            easing: 'easeOutElastic(1, .8)'
+          });
+
+          setCards(prev => prev.map(c =>
+            c.id === firstId || c.id === secondId
               ? { ...c, isMatched: true }
               : c
           ));
@@ -136,14 +161,28 @@ export default function CardFlipGame() {
           setFlippedCards([]);
         }, 500);
       } else {
-        // No match
+        // No match - shake animation
         setTimeout(() => {
-          setCards(prev => prev.map(c => 
-            c.id === firstId || c.id === secondId 
-              ? { ...c, isFlipped: false }
-              : c
-          ));
-          setFlippedCards([]);
+          const wrongCards = [
+            document.querySelector(`[data-card-id="${firstId}"]`),
+            document.querySelector(`[data-card-id="${secondId}"]`)
+          ];
+
+          anime({
+            targets: wrongCards,
+            translateX: [-10, 10, -5, 5, 0],
+            duration: 400,
+            easing: 'easeOutQuad'
+          });
+
+          setTimeout(() => {
+            setCards(prev => prev.map(c =>
+              c.id === firstId || c.id === secondId
+                ? { ...c, isFlipped: false }
+                : c
+            ));
+            setFlippedCards([]);
+          }, 500);
         }, 1000);
       }
     }
