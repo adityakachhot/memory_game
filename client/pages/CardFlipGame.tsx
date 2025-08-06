@@ -63,26 +63,23 @@ export default function CardFlipGame() {
   // Animate cards entrance when they're initialized
   useEffect(() => {
     if (cards.length > 0 && gameGridRef.current) {
-      anime({
-        targets: gameGridRef.current.querySelectorAll('.game-card'),
-        scale: [0, 1],
-        rotateY: [180, 0],
-        opacity: [0, 1],
-        duration: 800,
-        delay: anime.stagger(100, {start: 500}),
-        easing: 'easeOutBack'
+      const gameCards = gameGridRef.current.querySelectorAll('.game-card');
+      gameCards.forEach((card, index) => {
+        const element = card as HTMLElement;
+        element.style.animationDelay = `${500 + index * 100}ms`;
+        element.classList.add('animate-fade-in-up');
       });
     }
   }, [cards.length, difficulty]);
 
-  // Animate stats updates
+  // Animate stats updates with CSS
   useEffect(() => {
     if (statsRef.current && gameStarted) {
-      anime({
-        targets: statsRef.current.querySelectorAll('.stat-value'),
-        scale: [1, 1.2, 1],
-        duration: 300,
-        easing: 'easeOutQuad'
+      const statValues = statsRef.current.querySelectorAll('.stat-value');
+      statValues.forEach(stat => {
+        const element = stat as HTMLElement;
+        element.classList.remove('animate-pulse');
+        setTimeout(() => element.classList.add('animate-pulse'), 10);
       });
     }
   }, [moves, matches, timeElapsed]);
