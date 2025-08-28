@@ -30,49 +30,54 @@ export default function Layout({ children }: LayoutProps) {
             MemoryMaster
           </Link>
 
-          <nav className="hidden md:flex items-center gap-4">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.href;
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-4">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.href;
 
-              return (
-                <Link key={item.name} to={item.href}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
-                    size="sm"
-                    className={cn(
-                      "gap-2",
-                      isActive && "bg-primary text-primary-foreground",
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.name}
-                  </Button>
-                </Link>
-              );
-            })}
-          </nav>
+                return (
+                  <Link key={item.name} to={item.href}>
+                    <Button
+                      variant={isActive ? "default" : "ghost"}
+                      size="sm"
+                      className={cn(
+                        "gap-2",
+                        isActive && "bg-primary text-primary-foreground",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.name}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </nav>
 
-          {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center gap-2">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.href;
+            {/* Mobile Navigation */}
+            <div className="md:hidden flex items-center gap-2">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.href;
 
-              return (
-                <Link key={item.name} to={item.href}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
-                    size="sm"
-                    className={cn(
-                      isActive && "bg-primary text-primary-foreground",
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </Button>
-                </Link>
-              );
-            })}
+                return (
+                  <Link key={item.name} to={item.href}>
+                    <Button
+                      variant={isActive ? "default" : "ghost"}
+                      size="sm"
+                      className={cn(
+                        isActive && "bg-primary text-primary-foreground",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Authentication */}
+            <AuthButtons />
           </div>
         </div>
       </header>
