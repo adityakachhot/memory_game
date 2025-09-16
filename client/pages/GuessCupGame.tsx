@@ -141,8 +141,8 @@ export default function GuessCupGame() {
         );
 
         shuffleIndex++;
-        setTimeout(shuffle, 600); // Pause between shuffles
-      }, 600); // Time for position swap animation
+        setTimeout(shuffle, Math.max(200, stepDuration - 100)); // Pause between shuffles
+      }, stepDuration); // Time for position swap animation
     };
 
     shuffle();
@@ -322,7 +322,7 @@ export default function GuessCupGame() {
                 transform: `translateX(${(cup.visualPosition - cup.position) * 112}px)`,
                 transition:
                   gamePhase === "shuffling" && cup.isMoving
-                    ? "transform 600ms cubic-bezier(0.4, 0, 0.2, 1)"
+                    ? `transform ${Math.max(300, shuffleSpeed - (round - 1) * 40)}ms cubic-bezier(0.4, 0, 0.2, 1)`
                     : "transform 300ms ease",
               }}
             >
