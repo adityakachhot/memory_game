@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RotateCcw, Trophy, Timer, Zap } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/contexts/SettingsContext";
+import { mapSettingsToThreeLevel } from "@/lib/difficulty";
 
 interface GameCard {
   id: number;
