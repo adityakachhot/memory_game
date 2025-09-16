@@ -32,6 +32,7 @@ const cardSymbols = [
 ];
 
 export default function CardFlipGame() {
+  const { settings } = useSettings();
   const [cards, setCards] = useState<GameCard[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -39,12 +40,18 @@ export default function CardFlipGame() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "easy",
-  );
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
 
   const gameGridRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+
+  // Map settings difficulty on mount and when settings change (if game not started)
+  useEffect(() => {
+    const mapped = mapSettingsToThreeLevel(settings.difficulty);
+    if (!gameStarted) {
+      setDifficulty(mapped.level);
+    }
+  }, [settings.difficulty]);
 
   const difficultySettings = {
     easy: { pairs: 6, gridCols: "grid-cols-3", name: "Easy" },
