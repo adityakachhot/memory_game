@@ -35,6 +35,7 @@ interface ColorButton {
 }
 
 export default function SimonSaysGame() {
+  const { settings } = useSettings();
   const [sequence, setSequence] = useState<ColorType[]>([]);
   const [playerSequence, setPlayerSequence] = useState<ColorType[]>([]);
   const [gamePhase, setGamePhase] = useState<GamePhase>("setup");
