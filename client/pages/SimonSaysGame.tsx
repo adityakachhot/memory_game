@@ -209,6 +209,16 @@ export default function SimonSaysGame() {
     }
   };
 
+  useEffect(() => {
+    // Apply default speed from settings when in setup
+    if (gamePhase === "setup") {
+      if (settings.difficulty === "easy") setSpeed(1000);
+      else if (settings.difficulty === "normal") setSpeed(800);
+      else if (settings.difficulty === "hard") setSpeed(600);
+      else setSpeed(900);
+    }
+  }, [settings.difficulty, gamePhase]);
+
   const resetGame = () => {
     setSequence([]);
     setPlayerSequence([]);
@@ -216,7 +226,10 @@ export default function SimonSaysGame() {
     setCurrentStep(0);
     setScore(0);
     setRound(1);
-    setSpeed(1000);
+    if (settings.difficulty === "easy") setSpeed(1000);
+    else if (settings.difficulty === "normal") setSpeed(800);
+    else if (settings.difficulty === "hard") setSpeed(600);
+    else setSpeed(900);
     setActiveColor(null);
   };
 
