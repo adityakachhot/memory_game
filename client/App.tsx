@@ -15,6 +15,7 @@ import GuessCupGame from "./pages/GuessCupGame";
 import SimonSaysGame from "./pages/SimonSaysGame";
 import Settings from "./pages/Settings";
 import Leaderboard from "./pages/Leaderboard";
+import WordBuilderGame from "./pages/WordBuilderGame";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/game/simon-says" element={<SimonSaysGame />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/game/word-builder" element={<WordBuilderGame />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
