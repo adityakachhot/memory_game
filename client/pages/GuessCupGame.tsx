@@ -20,6 +20,7 @@ interface Cup {
 type GamePhase = "setup" | "showing" | "shuffling" | "guessing" | "result";
 
 export default function GuessCupGame() {
+  const { settings } = useSettings();
   const [cups, setCups] = useState<Cup[]>([]);
   const [gamePhase, setGamePhase] = useState<GamePhase>("setup");
   const [ballPosition, setBallPosition] = useState(1);
