@@ -92,6 +92,7 @@ export default function GuessCupGame() {
     let currentBallPosition = ballPosition;
 
     const shuffle = () => {
+      const stepDuration = Math.max(300, shuffleSpeed - (round - 1) * 40);
       if (shuffleIndex >= shuffleCount) {
         setBallPosition(currentBallPosition);
         setGamePhase("guessing");
