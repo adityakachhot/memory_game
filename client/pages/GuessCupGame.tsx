@@ -53,6 +53,24 @@ export default function GuessCupGame() {
     initializeGame();
   }, [initializeGame]);
 
+  useEffect(() => {
+    const diff = settings.difficulty;
+    if (diff === "easy") {
+      setCupCount(3);
+      setShuffleSpeed(1000);
+    } else if (diff === "normal") {
+      setCupCount(4);
+      setShuffleSpeed(800);
+    } else if (diff === "hard") {
+      setCupCount(5);
+      setShuffleSpeed(600);
+    } else {
+      setCupCount(3);
+      setShuffleSpeed(900);
+    }
+    initializeGame();
+  }, [settings.difficulty]);
+
   const startGame = () => {
     setGamePhase("showing");
 
