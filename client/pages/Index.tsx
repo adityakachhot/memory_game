@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Layers, Trophy, Brain, Palette } from "lucide-react";
+import { Sparkles, Layers, Trophy, Brain, Palette, Type } from "lucide-react";
 import Layout from "@/components/Layout";
 
 const games = [
@@ -44,6 +44,17 @@ const games = [
     color: "from-blue-600/20 to-indigo-800/20",
     borderColor: "border-blue-500/30",
     href: "/game/simon-says",
+  },
+  {
+    id: "word-builder",
+    title: "Word Builder",
+    description:
+      "Unscramble the letters to form a word. New letters every round with adaptive challenge.",
+    icon: Type,
+    difficulty: "Adaptive",
+    color: "from-emerald-600/20 to-teal-800/20",
+    borderColor: "border-emerald-500/30",
+    href: "/game/word-builder",
   },
 ];
 
