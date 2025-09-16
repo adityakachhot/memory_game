@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/contexts/SettingsContext";
 
 type GamePhase =
   | "setup"
