@@ -1,8 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export interface User {
   id: string;
   username: string;
+  email: string;
   createdAt: string;
 }
 
@@ -14,8 +19,8 @@ export interface AuthState {
 
 interface AuthContextType {
   authState: AuthState;
-  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (username: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
@@ -30,128 +35,100 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isLoading: true,
   });
 
-  // Load auth state from localStorage on mount
+  // Subscribe to Firebase auth state
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem("memorymaster-user");
-      if (savedUser) {
-        const user = JSON.parse(savedUser);
+    const unsub = onAuthStateChanged(auth, async (fbUser) => {
+      if (!fbUser) {
+        setAuthState({ user: null, isAuthenticated: false, isLoading: false });
+        return;
+      }
+      try {
+        const ref = doc(db, "users", fbUser.uid);
+        const snap = await getDoc(ref);
+        let profile: { username: string; email: string; createdAt?: any } = {
+          username: fbUser.displayName || fbUser.email?.split("@")[0] || "Player",
+          email: fbUser.email || "",
+          createdAt: new Date().toISOString(),
+        };
+        if (snap.exists()) {
+          const data = snap.data() as any;
+          profile = {
+            username: data.username || profile.username,
+            email: data.email || profile.email,
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt || profile.createdAt,
+          };
+        } else {
+          await setDoc(ref, { username: profile.username, email: profile.email, createdAt: serverTimestamp() }, { merge: true });
+        }
         setAuthState({
-          user,
+          user: { id: fbUser.uid, username: profile.username, email: profile.email, createdAt: profile.createdAt },
           isAuthenticated: true,
           isLoading: false,
         });
-      } else {
-        setAuthState(prev => ({ ...prev, isLoading: false }));
+      } catch (e) {
+        console.error("Auth state error:", e);
+        setAuthState({ user: null, isAuthenticated: false, isLoading: false });
       }
-    } catch (error) {
-      console.error("Error loading auth state:", error);
-      setAuthState(prev => ({ ...prev, isLoading: false }));
-    }
+    });
+    return () => unsub();
   }, []);
 
-  const register = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    if (!username.trim() || !password.trim()) {
-      return { success: false, error: "Username and password are required" };
+  const register = async (username: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (!username.trim() || !email.trim() || !password.trim()) {
+      return { success: false, error: "Username, email and password are required" };
     }
-
     if (username.length < 3) {
       return { success: false, error: "Username must be at least 3 characters long" };
     }
-
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { success: false, error: "Please enter a valid email" };
+    }
     if (password.length < 6) {
       return { success: false, error: "Password must be at least 6 characters long" };
     }
-
     try {
-      // Get existing users from localStorage
-      const existingUsers = JSON.parse(localStorage.getItem("memorymaster-users") || "[]");
-      
-      // Check if username already exists
-      if (existingUsers.find((user: any) => user.username === username)) {
-        return { success: false, error: "Username already exists" };
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      if (cred.user) {
+        await updateProfile(cred.user, { displayName: username.trim() });
+        const ref = doc(db, "users", cred.user.uid);
+        await setDoc(ref, { username: username.trim(), email: email.trim(), createdAt: serverTimestamp() }, { merge: true });
       }
-
-      // Create new user
-      const newUser: User = {
-        id: crypto.randomUUID(),
-        username: username.trim(),
-        createdAt: new Date().toISOString(),
-      };
-
-      // Store user credentials (in production, this should be handled by a secure backend)
-      const userWithPassword = {
-        ...newUser,
-        password: password, // In production, this should be hashed
-      };
-
-      // Save to users list
-      existingUsers.push(userWithPassword);
-      localStorage.setItem("memorymaster-users", JSON.stringify(existingUsers));
-
-      // Set as current user
-      localStorage.setItem("memorymaster-user", JSON.stringify(newUser));
-      setAuthState({
-        user: newUser,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
+      let msg = "Registration failed. Please try again.";
+      if (error && typeof error.code === "string") {
+        if (error.code === "auth/email-already-in-use") msg = "Email already in use";
+        else if (error.code === "auth/invalid-email") msg = "Invalid email address";
+        else if (error.code === "auth/weak-password") msg = "Password is too weak";
+      }
       console.error("Registration error:", error);
-      return { success: false, error: "Registration failed. Please try again." };
+      return { success: false, error: msg };
     }
   };
 
-  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    if (!username.trim() || !password.trim()) {
-      return { success: false, error: "Username and password are required" };
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (!email.trim() || !password.trim()) {
+      return { success: false, error: "Email and password are required" };
     }
-
     try {
-      // Get existing users from localStorage
-      const existingUsers = JSON.parse(localStorage.getItem("memorymaster-users") || "[]");
-      
-      // Find user with matching credentials
-      const foundUser = existingUsers.find(
-        (user: any) => user.username === username && user.password === password
-      );
-
-      if (!foundUser) {
-        return { success: false, error: "Invalid username or password" };
-      }
-
-      // Create user object without password
-      const user: User = {
-        id: foundUser.id,
-        username: foundUser.username,
-        createdAt: foundUser.createdAt,
-      };
-
-      // Set as current user
-      localStorage.setItem("memorymaster-user", JSON.stringify(user));
-      setAuthState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-
+      await signInWithEmailAndPassword(auth, email.trim(), password);
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
+      let msg = "Login failed. Please try again.";
+      if (error && typeof error.code === "string") {
+        if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") msg = "Invalid email or password";
+        else if (error.code === "auth/user-not-found") msg = "No account found for this email";
+        else if (error.code === "auth/too-many-requests") msg = "Too many attempts. Try again later";
+      }
       console.error("Login error:", error);
-      return { success: false, error: "Login failed. Please try again." };
+      return { success: false, error: msg };
     }
   };
 
   const logout = () => {
     try {
-      localStorage.removeItem("memorymaster-user");
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
+      signOut(auth);
+      setAuthState({ user: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
       console.error("Logout error:", error);
     }
