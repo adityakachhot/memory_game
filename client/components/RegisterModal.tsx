@@ -25,6 +25,7 @@ export default function RegisterModal({
   onSwitchToLogin,
 }: RegisterModalProps) {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
