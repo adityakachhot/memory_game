@@ -1,4 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { auth, db } from "@/lib/firebase";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  User as FirebaseUser,
+} from "firebase/auth";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 export interface User {
   id: string;
@@ -30,131 +39,89 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isLoading: true,
   });
 
-  // Load auth state from localStorage on mount
+  // Subscribe to Firebase auth state
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem("memorymaster-user");
-      if (savedUser) {
-        const user = JSON.parse(savedUser);
-        setAuthState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-        });
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const mapped = await mapFirebaseUserToUser(firebaseUser);
+        setAuthState({ user: mapped, isAuthenticated: true, isLoading: false });
       } else {
-        setAuthState(prev => ({ ...prev, isLoading: false }));
+        setAuthState({ user: null, isAuthenticated: false, isLoading: false });
       }
-    } catch (error) {
-      console.error("Error loading auth state:", error);
-      setAuthState(prev => ({ ...prev, isLoading: false }));
-    }
+    });
+    return () => unsubscribe();
   }, []);
 
-  const register = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    if (!username.trim() || !password.trim()) {
-      return { success: false, error: "Username and password are required" };
+  const mapFirebaseUserToUser = async (firebaseUser: FirebaseUser): Promise<User> => {
+    // Fetch profile from Firestore if exists (to get username and createdAt)
+    const userDocRef = doc(db, "users", firebaseUser.uid);
+    const snap = await getDoc(userDocRef);
+    if (snap.exists()) {
+      const data = snap.data() as any;
+      return {
+        id: firebaseUser.uid,
+        username: data.username || firebaseUser.email || "user",
+        createdAt: (data.createdAt?.toDate?.() || new Date()).toISOString(),
+      };
     }
+    // Fallback to auth info
+    return {
+      id: firebaseUser.uid,
+      username: firebaseUser.email || "user",
+      createdAt: new Date(firebaseUser.metadata.creationTime || Date.now()).toISOString(),
+    };
+  };
 
-    if (username.length < 3) {
-      return { success: false, error: "Username must be at least 3 characters long" };
+  const register = async (emailOrUsername: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (!emailOrUsername.trim() || !password.trim()) {
+      return { success: false, error: "Email and password are required" };
     }
-
+    const isEmail = /@/.test(emailOrUsername);
+    if (!isEmail) {
+      if (emailOrUsername.length < 3) {
+        return { success: false, error: "Username must be at least 3 characters long" };
+      }
+    }
     if (password.length < 6) {
       return { success: false, error: "Password must be at least 6 characters long" };
     }
-
     try {
-      // Get existing users from localStorage
-      const existingUsers = JSON.parse(localStorage.getItem("memorymaster-users") || "[]");
-      
-      // Check if username already exists
-      if (existingUsers.find((user: any) => user.username === username)) {
-        return { success: false, error: "Username already exists" };
-      }
-
-      // Create new user
-      const newUser: User = {
-        id: crypto.randomUUID(),
-        username: username.trim(),
-        createdAt: new Date().toISOString(),
-      };
-
-      // Store user credentials (in production, this should be handled by a secure backend)
-      const userWithPassword = {
-        ...newUser,
-        password: password, // In production, this should be hashed
-      };
-
-      // Save to users list
-      existingUsers.push(userWithPassword);
-      localStorage.setItem("memorymaster-users", JSON.stringify(existingUsers));
-
-      // Set as current user
-      localStorage.setItem("memorymaster-user", JSON.stringify(newUser));
-      setAuthState({
-        user: newUser,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-
+      const cred = await createUserWithEmailAndPassword(auth, isEmail ? emailOrUsername : `${emailOrUsername}@memorymaster.app`, password);
+      // Create Firestore user profile with username (derive from email before @)
+      const email = cred.user.email || emailOrUsername;
+      const username = isEmail ? (email.split("@")[0] || "user") : emailOrUsername;
+      const userDocRef = doc(db, "users", cred.user.uid);
+      await setDoc(userDocRef, {
+        username,
+        email,
+        createdAt: serverTimestamp(),
+      }, { merge: true });
+      const mapped = await mapFirebaseUserToUser(cred.user);
+      setAuthState({ user: mapped, isAuthenticated: true, isLoading: false });
       return { success: true };
-    } catch (error) {
-      console.error("Registration error:", error);
-      return { success: false, error: "Registration failed. Please try again." };
+    } catch (error: any) {
+      const message = error?.message || "Registration failed. Please try again.";
+      return { success: false, error: message };
     }
   };
 
-  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    if (!username.trim() || !password.trim()) {
-      return { success: false, error: "Username and password are required" };
+  const login = async (emailOrUsername: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (!emailOrUsername.trim() || !password.trim()) {
+      return { success: false, error: "Email and password are required" };
     }
-
     try {
-      // Get existing users from localStorage
-      const existingUsers = JSON.parse(localStorage.getItem("memorymaster-users") || "[]");
-      
-      // Find user with matching credentials
-      const foundUser = existingUsers.find(
-        (user: any) => user.username === username && user.password === password
-      );
-
-      if (!foundUser) {
-        return { success: false, error: "Invalid username or password" };
-      }
-
-      // Create user object without password
-      const user: User = {
-        id: foundUser.id,
-        username: foundUser.username,
-        createdAt: foundUser.createdAt,
-      };
-
-      // Set as current user
-      localStorage.setItem("memorymaster-user", JSON.stringify(user));
-      setAuthState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-
+      const isEmail = /@/.test(emailOrUsername);
+      const email = isEmail ? emailOrUsername : `${emailOrUsername}@memorymaster.app`;
+      await signInWithEmailAndPassword(auth, email, password);
       return { success: true };
-    } catch (error) {
-      console.error("Login error:", error);
-      return { success: false, error: "Login failed. Please try again." };
+    } catch (error: any) {
+      const message = error?.message || "Login failed. Please try again.";
+      return { success: false, error: message };
     }
   };
 
   const logout = () => {
-    try {
-      localStorage.removeItem("memorymaster-user");
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+    signOut(auth).catch(() => {});
   };
 
   return (

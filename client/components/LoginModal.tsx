@@ -24,7 +24,7 @@ export default function LoginModal({
   onClose,
   onSwitchToRegister,
 }: LoginModalProps) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,9 +38,9 @@ export default function LoginModal({
     setIsLoading(true);
 
     try {
-      const result = await login(username, password);
+      const result = await login(email, password);
       if (result.success) {
-        setUsername("");
+        setEmail("");
         setPassword("");
         onClose();
       } else {
@@ -54,7 +54,7 @@ export default function LoginModal({
   };
 
   const handleClose = () => {
-    setUsername("");
+    setEmail("");
     setPassword("");
     setError("");
     setShowPassword(false);
@@ -79,13 +79,13 @@ export default function LoginModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="login-username">Username</Label>
+            <Label htmlFor="login-email">Email</Label>
             <Input
-              id="login-username"
-              type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="login-email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               required
             />

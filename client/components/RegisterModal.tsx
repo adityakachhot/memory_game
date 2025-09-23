@@ -25,6 +25,7 @@ export default function RegisterModal({
   onSwitchToLogin,
 }: RegisterModalProps) {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -35,6 +36,14 @@ export default function RegisterModal({
   const { register } = useAuth();
 
   const validateForm = () => {
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Enter a valid email address");
+      return false;
+    }
     if (!username.trim()) {
       setError("Username is required");
       return false;
@@ -69,9 +78,10 @@ export default function RegisterModal({
     setIsLoading(true);
 
     try {
-      const result = await register(username, password);
+      const result = await register(email, password);
       if (result.success) {
         setUsername("");
+        setEmail("");
         setPassword("");
         setConfirmPassword("");
         onClose();
@@ -87,6 +97,7 @@ export default function RegisterModal({
 
   const handleClose = () => {
     setUsername("");
+    setEmail("");
     setPassword("");
     setConfirmPassword("");
     setError("");
@@ -114,6 +125,19 @@ export default function RegisterModal({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          <div className="space-y-2">
+            <Label htmlFor="register-email">Email</Label>
+            <Input
+              id="register-email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="register-username">Username</Label>
