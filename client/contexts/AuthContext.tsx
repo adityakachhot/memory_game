@@ -85,11 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (password.length < 6) {
       return { success: false, error: "Password must be at least 6 characters long" };
     }
+    let cred: Awaited<ReturnType<typeof createUserWithEmailAndPassword>> | null = null;
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
         return { success: false, error: "No internet connection. Please reconnect and try again." };
       }
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      cred = await createUserWithEmailAndPassword(auth, email, password);
       if (cred.user) {
         await updateProfile(cred.user, { displayName: username.trim() });
         const ref = doc(db, "users", cred.user.uid);
@@ -110,6 +111,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } else if (typeof error?.message === "string" && error.message.includes("insufficient permissions")) {
         msg = "Firestore rules block access. Update rules to allow users/{uid}.";
+      }
+      if (cred?.user) {
+        try {
+          const { deleteUser } = await import("firebase/auth");
+          await deleteUser(cred.user);
+        } catch (_) {
+          // ignore cleanup errors
+        }
       }
       console.error("Registration error:", error);
       return { success: false, error: msg };
