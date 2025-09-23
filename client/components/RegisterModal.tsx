@@ -145,6 +145,19 @@ export default function RegisterModal({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="register-email">Email</Label>
+            <Input
+              id="register-email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="register-password">Password</Label>
             <div className="relative">
               <Input
