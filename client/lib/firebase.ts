@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCkw0OAIIgFNAEMddJEy6AdT-GVpzY8Zhk",
   authDomain: "memory-master-41cca.firebaseapp.com",
   projectId: "memory-master-41cca",
-  storageBucket: "memory-master-41cca.firebasestorage.app",
+  storageBucket: "memory-master-41cca.appspot.com",
   messagingSenderId: "1041110557030",
   appId: "1:1041110557030:web:1e2545ae291e8de28128a7",
   measurementId: "G-1T8WWB611L",
