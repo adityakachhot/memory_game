@@ -24,7 +24,7 @@ export default function LoginModal({
   onClose,
   onSwitchToRegister,
 }: LoginModalProps) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
