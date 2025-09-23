@@ -20,6 +20,10 @@ export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // Firestore Database
 export const db = getFirestore(app);
 
+// Auth with local persistence
+export const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch(() => {});
+
 // Analytics (only on supported browsers and client-side)
 export const analyticsPromise = (() => {
   if (typeof window === "undefined") return Promise.resolve(null);
