@@ -40,7 +40,7 @@ export default function LoginModal({
     try {
       const result = await login(email, password);
       if (result.success) {
-        setUsername("");
+        setEmail("");
         setPassword("");
         onClose();
       } else {
