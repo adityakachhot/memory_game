@@ -100,6 +100,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (error.code === "auth/email-already-in-use") msg = "Email already in use";
         else if (error.code === "auth/invalid-email") msg = "Invalid email address";
         else if (error.code === "auth/weak-password") msg = "Password is too weak";
+        else if (error.code === "auth/network-request-failed") {
+          const host = typeof window !== "undefined" ? window.location.hostname : "your-domain";
+          msg = `Network error. Ensure Email/Password is enabled and add ${host} to Firebase Auth Authorized domains. Also check ad blockers.`;
+        }
       }
       console.error("Registration error:", error);
       return { success: false, error: msg };
