@@ -54,7 +54,7 @@ export default function LoginModal({
   };
 
   const handleClose = () => {
-    setUsername("");
+    setEmail("");
     setPassword("");
     setError("");
     setShowPassword(false);
