@@ -44,6 +44,14 @@ export default function RegisterModal({
       setError("Username must be at least 3 characters long");
       return false;
     }
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email");
+      return false;
+    }
     if (!password) {
       setError("Password is required");
       return false;
