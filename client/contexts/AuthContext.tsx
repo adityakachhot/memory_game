@@ -42,14 +42,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setAuthState({ user: null, isAuthenticated: false, isLoading: false });
         return;
       }
+      const ref = doc(db, "users", fbUser.uid);
+      let profile: { username: string; email: string; createdAt?: any } = {
+        username: fbUser.displayName || fbUser.email?.split("@")[0] || "Player",
+        email: fbUser.email || "",
+        createdAt: new Date().toISOString(),
+      };
       try {
-        const ref = doc(db, "users", fbUser.uid);
         const snap = await getDoc(ref);
-        let profile: { username: string; email: string; createdAt?: any } = {
-          username: fbUser.displayName || fbUser.email?.split("@")[0] || "Player",
-          email: fbUser.email || "",
-          createdAt: new Date().toISOString(),
-        };
         if (snap.exists()) {
           const data = snap.data() as any;
           profile = {
@@ -60,15 +60,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } else {
           await setDoc(ref, { username: profile.username, email: profile.email, createdAt: serverTimestamp() }, { merge: true });
         }
-        setAuthState({
-          user: { id: fbUser.uid, username: profile.username, email: profile.email, createdAt: profile.createdAt },
-          isAuthenticated: true,
-          isLoading: false,
-        });
       } catch (e) {
-        console.error("Auth state error:", e);
-        setAuthState({ user: null, isAuthenticated: false, isLoading: false });
+        console.warn("Firestore profile access failed (using fallback):", e);
       }
+      setAuthState({
+        user: { id: fbUser.uid, username: profile.username, email: profile.email, createdAt: profile.createdAt },
+        isAuthenticated: true,
+        isLoading: false,
+      });
     });
     return () => unsub();
   }, []);
@@ -106,7 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         else if (error.code === "auth/network-request-failed") {
           const host = typeof window !== "undefined" ? window.location.hostname : "your-domain";
           msg = `Network error. Ensure Email/Password is enabled and add ${host} to Firebase Auth Authorized domains. Also check ad blockers.`;
+        } else if (error.code === "permission-denied") {
+          msg = "Firestore rules block writes. Allow users/{uid} for authenticated users.";
         }
+      } else if (typeof error?.message === "string" && error.message.includes("insufficient permissions")) {
+        msg = "Firestore rules block access. Update rules to allow users/{uid}.";
       }
       console.error("Registration error:", error);
       return { success: false, error: msg };
