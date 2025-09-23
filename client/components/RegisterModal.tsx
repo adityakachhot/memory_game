@@ -97,6 +97,7 @@ export default function RegisterModal({
 
   const handleClose = () => {
     setUsername("");
+    setEmail("");
     setPassword("");
     setConfirmPassword("");
     setError("");
