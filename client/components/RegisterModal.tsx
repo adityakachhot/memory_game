@@ -78,7 +78,7 @@ export default function RegisterModal({
     setIsLoading(true);
 
     try {
-      const result = await register(username, password);
+      const result = await register(username, email, password);
       if (result.success) {
         setUsername("");
         setPassword("");
