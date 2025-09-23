@@ -22,7 +22,7 @@ export const db = getFirestore(app);
 
 // Auth with local persistence
 export const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence).catch(() => {});
+setPersistence(auth, indexedDBLocalPersistence).catch(() => setPersistence(auth, browserLocalPersistence).catch(() => {}));
 
 // Analytics (only on supported browsers and client-side)
 export const analyticsPromise = (() => {
