@@ -87,6 +87,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return { success: false, error: "Password must be at least 6 characters long" };
     }
     try {
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        return { success: false, error: "No internet connection. Please reconnect and try again." };
+      }
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       if (cred.user) {
         await updateProfile(cred.user, { displayName: username.trim() });
@@ -115,6 +118,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return { success: false, error: "Email and password are required" };
     }
     try {
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        return { success: false, error: "No internet connection. Please reconnect and try again." };
+      }
       await signInWithEmailAndPassword(auth, email.trim(), password);
       return { success: true };
     } catch (error: any) {
