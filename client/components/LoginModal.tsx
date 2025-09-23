@@ -38,7 +38,7 @@ export default function LoginModal({
     setIsLoading(true);
 
     try {
-      const result = await login(username, password);
+      const result = await login(email, password);
       if (result.success) {
         setUsername("");
         setPassword("");
