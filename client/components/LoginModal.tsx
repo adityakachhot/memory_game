@@ -79,13 +79,13 @@ export default function LoginModal({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="login-username">Username</Label>
+            <Label htmlFor="login-email">Email</Label>
             <Input
-              id="login-username"
-              type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="login-email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               required
             />
