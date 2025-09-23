@@ -123,6 +123,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") msg = "Invalid email or password";
         else if (error.code === "auth/user-not-found") msg = "No account found for this email";
         else if (error.code === "auth/too-many-requests") msg = "Too many attempts. Try again later";
+        else if (error.code === "auth/network-request-failed") {
+          const host = typeof window !== "undefined" ? window.location.hostname : "your-domain";
+          msg = `Network error. Add ${host} to Firebase Auth Authorized domains and check connectivity/ad blockers.`;
+        }
       }
       console.error("Login error:", error);
       return { success: false, error: msg };
