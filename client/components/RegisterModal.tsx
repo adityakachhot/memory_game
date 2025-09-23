@@ -107,7 +107,8 @@ export default function RegisterModal({
   };
 
   const isPasswordValid = password.length >= 6;
-  const doPasswordsMatch = password === confirmPassword && confirmPassword.length > 0;
+  const doPasswordsMatch =
+    password === confirmPassword && confirmPassword.length > 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -191,7 +192,11 @@ export default function RegisterModal({
                 ) : (
                   <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
                 )}
-                <span className={isPasswordValid ? "text-green-500" : "text-muted-foreground"}>
+                <span
+                  className={
+                    isPasswordValid ? "text-green-500" : "text-muted-foreground"
+                  }
+                >
                   At least 6 characters
                 </span>
               </div>
@@ -232,7 +237,13 @@ export default function RegisterModal({
                 ) : (
                   <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
                 )}
-                <span className={doPasswordsMatch ? "text-green-500" : "text-muted-foreground"}>
+                <span
+                  className={
+                    doPasswordsMatch
+                      ? "text-green-500"
+                      : "text-muted-foreground"
+                  }
+                >
                   Passwords match
                 </span>
               </div>
