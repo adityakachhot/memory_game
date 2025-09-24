@@ -48,8 +48,13 @@ export async function updateGameStats(
     // Fallback to non-transactional increments (may not update bestStreak accurately without read)
     const updates: Record<string, any> = { updatedAt: serverTimestamp() };
     if (delta.played) updates.gamesPlayed = increment(1);
-    if (typeof delta.addScore === "number") updates.totalScore = increment(delta.addScore);
-    await setDoc(ref, { gamesPlayed: 0, bestStreak: 0, totalScore: 0 }, { merge: true });
+    if (typeof delta.addScore === "number")
+      updates.totalScore = increment(delta.addScore);
+    await setDoc(
+      ref,
+      { gamesPlayed: 0, bestStreak: 0, totalScore: 0 },
+      { merge: true },
+    );
     if (Object.keys(updates).length > 0) {
       try {
         await updateDoc(ref, updates);
