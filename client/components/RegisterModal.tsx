@@ -36,6 +36,14 @@ export default function RegisterModal({
   const { register } = useAuth();
 
   const validateForm = () => {
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Enter a valid email address");
+      return false;
+    }
     if (!username.trim()) {
       setError("Username is required");
       return false;
@@ -126,6 +134,19 @@ export default function RegisterModal({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          <div className="space-y-2">
+            <Label htmlFor="register-email">Email</Label>
+            <Input
+              id="register-email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="register-username">Username</Label>

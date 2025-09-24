@@ -7,6 +7,8 @@ import { ArrowLeft, RotateCcw, Trophy, Target, Zap, Play } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { updateGameStats } from "@/lib/user-stats";
 
 interface Cup {
   id: number;
@@ -21,6 +23,7 @@ type GamePhase = "setup" | "showing" | "shuffling" | "guessing" | "result";
 
 export default function GuessCupGame() {
   const { settings } = useSettings();
+  const { authState } = useAuth();
   const [cups, setCups] = useState<Cup[]>([]);
   const [gamePhase, setGamePhase] = useState<GamePhase>("setup");
   const [ballPosition, setBallPosition] = useState(1);
@@ -163,12 +166,20 @@ export default function GuessCupGame() {
     setCups((prev) => prev.map((cup) => ({ ...cup, isLifted: true })));
     setGamePhase("result");
 
+    const nextStreak = isCorrect ? streak + 1 : 0;
+    const roundScore = isCorrect ? 100 + streak * 20 : 0;
     if (isCorrect) {
-      const roundScore = 100 + streak * 20;
       setScore((prev) => prev + roundScore);
       setStreak((prev) => prev + 1);
     } else {
       setStreak(0);
+    }
+    if (authState.isAuthenticated && authState.user) {
+      updateGameStats(authState.user.id, "guess-cup", {
+        played: true,
+        addScore: roundScore,
+        streakCandidate: nextStreak,
+      }).catch(() => {});
     }
 
     setTimeout(() => {

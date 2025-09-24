@@ -8,6 +8,8 @@ import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { mapSettingsToThreeLevel } from "@/lib/difficulty";
+import { useAuth } from "@/contexts/AuthContext";
+import { updateGameStats } from "@/lib/user-stats";
 
 interface GameCard {
   id: number;
@@ -33,6 +35,7 @@ const cardSymbols = [
 
 export default function CardFlipGame() {
   const { settings } = useSettings();
+  const { authState } = useAuth();
   const [cards, setCards] = useState<GameCard[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -123,6 +126,20 @@ export default function CardFlipGame() {
       setGameCompleted(true);
     }
   }, [matches, difficulty]);
+
+  useEffect(() => {
+    if (gameCompleted && authState.isAuthenticated && authState.user) {
+      const finalScore = getScore();
+      const streakCandidate = difficultySettings[difficulty].pairs;
+      updateGameStats(authState.user.id, "card-flip", {
+        played: true,
+        addScore: finalScore,
+        streakCandidate,
+      }).catch(() => {});
+    }
+    // Only run when game becomes completed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameCompleted]);
 
   const handleCardClick = (cardId: number) => {
     if (!gameStarted) setGameStarted(true);

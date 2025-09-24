@@ -16,6 +16,8 @@ import {
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { updateGameStats } from "@/lib/user-stats";
 
 type GamePhase =
   | "setup"
@@ -36,6 +38,7 @@ interface ColorButton {
 
 export default function SimonSaysGame() {
   const { settings } = useSettings();
+  const { authState } = useAuth();
   const [sequence, setSequence] = useState<ColorType[]>([]);
   const [playerSequence, setPlayerSequence] = useState<ColorType[]>([]);
   const [gamePhase, setGamePhase] = useState<GamePhase>("setup");
@@ -183,6 +186,14 @@ export default function SimonSaysGame() {
         setGamePhase("gameOver");
         if (score > bestScore) {
           setBestScore(score);
+        }
+        if (authState.isAuthenticated && authState.user) {
+          const streakCandidate = Math.max(sequence.length - 1, 0);
+          updateGameStats(authState.user.id, "simon-says", {
+            played: true,
+            addScore: score,
+            streakCandidate,
+          }).catch(() => {});
         }
       }, 1000);
       return;

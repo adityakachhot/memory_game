@@ -10,6 +10,8 @@ import { mapSettingsToWordConfig } from "@/lib/difficulty";
 import { WORD_LIST } from "@/data/word-list";
 import { ArrowLeft, RotateCcw, Shuffle, Check, X, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { updateGameStats } from "@/lib/user-stats";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -41,6 +43,8 @@ export default function WordBuilderGame() {
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const { authState } = useAuth();
   const [targetWord, setTargetWord] = useState("");
   const [letters, setLetters] = useState<string[]>([]);
   const [guess, setGuess] = useState("");
@@ -102,9 +106,19 @@ export default function WordBuilderGame() {
     if (ok) {
       const gained = Math.max(10, targetWord.length * 10 + (letters.length - targetWord.length) * 2);
       setScore((s) => s + gained);
+      setStreak((v) => v + 1);
       setMessage({ ok: true, text: `Correct! +${gained} points` });
+      if (authState.isAuthenticated && authState.user) {
+        const nextStreak = streak + 1;
+        updateGameStats(authState.user.id, "word-builder", {
+          played: true,
+          addScore: gained,
+          streakCandidate: nextStreak,
+        }).catch(() => {});
+      }
       setTimeout(() => nextRound(), 1200);
     } else {
+      setStreak(0);
       setMessage({ ok: false, text: "Try again!" });
     }
   };
@@ -124,6 +138,7 @@ export default function WordBuilderGame() {
   const resetGame = () => {
     setRound(1);
     setScore(0);
+    setStreak(0);
     buildRound(1);
   };
 

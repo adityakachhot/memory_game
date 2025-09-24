@@ -9,6 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Layers, Trophy, Brain, Palette, Type } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { getUserTotals } from "@/lib/user-stats";
 import Layout from "@/components/Layout";
 
 const games = [
@@ -58,13 +61,50 @@ const games = [
   },
 ];
 
-const stats = [
-  { label: "Games Played", value: "24", icon: Brain },
-  { label: "Best Streak", value: "8", icon: Sparkles },
-  { label: "Total Score", value: "1,340", icon: Trophy },
-];
+function useDashboardStats() {
+  const { authState } = useAuth();
+  const [totals, setTotals] = useState<{ gamesPlayed: number; bestStreak: number; totalScore: number } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function run() {
+      if (!authState.isAuthenticated || !authState.user) {
+        setTotals(null);
+        return;
+      }
+      try {
+        const res = await getUserTotals(authState.user.id);
+        if (!cancelled) setTotals(res);
+      } catch (e) {
+        if (!cancelled) setTotals(null);
+      }
+    }
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [authState.isAuthenticated, authState.user?.id]);
+
+  const stats = useMemo(() => {
+    if (!totals) {
+      return [
+        { label: "Games Played", value: "—", icon: Brain },
+        { label: "Best Streak", value: "—", icon: Sparkles },
+        { label: "Total Score", value: "—", icon: Trophy },
+      ];
+    }
+    return [
+      { label: "Games Played", value: totals.gamesPlayed.toString(), icon: Brain },
+      { label: "Best Streak", value: totals.bestStreak.toString(), icon: Sparkles },
+      { label: "Total Score", value: totals.totalScore.toLocaleString(), icon: Trophy },
+    ];
+  }, [totals]);
+
+  return stats;
+}
 
 export default function Index() {
+  const stats = useDashboardStats();
   return (
     <Layout>
       <div className="space-y-8 overflow-hidden">
