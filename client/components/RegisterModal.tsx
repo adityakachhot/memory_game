@@ -52,14 +52,6 @@ export default function RegisterModal({
       setError("Username must be at least 3 characters long");
       return false;
     }
-    if (!email.trim()) {
-      setError("Email is required");
-      return false;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Please enter a valid email");
-      return false;
-    }
     if (!password) {
       setError("Password is required");
       return false;
@@ -164,19 +156,6 @@ export default function RegisterModal({
                 Username must be at least 3 characters long
               </p>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="register-email">Email</Label>
-            <Input
-              id="register-email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-              required
-            />
           </div>
 
           <div className="space-y-2">
