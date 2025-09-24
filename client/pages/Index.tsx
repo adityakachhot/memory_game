@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, Layers, Trophy, Brain, Palette, Type } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getUserTotals } from "@/lib/user-stats";
 import Layout from "@/components/Layout";
+import { db } from "@/lib/firebase";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const games = [
   {
@@ -66,23 +67,28 @@ function useDashboardStats() {
   const [totals, setTotals] = useState<{ gamesPlayed: number; bestStreak: number; totalScore: number } | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      if (!authState.isAuthenticated || !authState.user) {
-        setTotals(null);
-        return;
-      }
-      try {
-        const res = await getUserTotals(authState.user.id);
-        if (!cancelled) setTotals(res);
-      } catch (e) {
-        if (!cancelled) setTotals(null);
-      }
+    if (!authState.isAuthenticated || !authState.user) {
+      setTotals(null);
+      return;
     }
-    run();
-    return () => {
-      cancelled = true;
-    };
+    const statsRef = collection(db, "users", authState.user.id, "stats");
+    const unsub = onSnapshot(
+      statsRef,
+      (snaps) => {
+        let gamesPlayed = 0;
+        let totalScore = 0;
+        let bestStreak = 0;
+        snaps.forEach((d) => {
+          const s = d.data() as any;
+          gamesPlayed += s.gamesPlayed || 0;
+          totalScore += s.totalScore || 0;
+          bestStreak = Math.max(bestStreak, s.bestStreak || 0);
+        });
+        setTotals({ gamesPlayed, totalScore, bestStreak });
+      },
+      () => setTotals(null),
+    );
+    return () => unsub();
   }, [authState.isAuthenticated, authState.user?.id]);
 
   const stats = useMemo(() => {
