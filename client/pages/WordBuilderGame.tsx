@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateGameStats } from "@/lib/user-stats";
+import { updateGameStats, logGamePlay } from "@/lib/user-stats";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -135,6 +135,14 @@ export default function WordBuilderGame() {
           played: true,
           addScore: gained,
           streakCandidate: nextStreak,
+        }).catch(() => {});
+        logGamePlay(authState.user.id, "word-builder", {
+          round,
+          scoreGained: gained,
+          wordLength: targetWord.length,
+          extraLetters: letters.length - targetWord.length,
+          nextStreak,
+          word: targetWord,
         }).catch(() => {});
       }
       setTimeout(() => nextRound(), 1200);
