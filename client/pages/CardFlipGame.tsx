@@ -43,7 +43,9 @@ export default function CardFlipGame() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
+    "easy",
+  );
 
   const gameGridRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -144,7 +146,11 @@ export default function CardFlipGame() {
   const handleCardClick = (cardId: number) => {
     if (!gameStarted) {
       setGameStarted(true);
-      if (!hasRecordedPlayRef.current && authState.isAuthenticated && authState.user) {
+      if (
+        !hasRecordedPlayRef.current &&
+        authState.isAuthenticated &&
+        authState.user
+      ) {
         hasRecordedPlayRef.current = true;
         updateGameStats(authState.user.id, "card-flip", {
           played: true,

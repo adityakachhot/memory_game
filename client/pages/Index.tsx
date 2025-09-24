@@ -64,7 +64,11 @@ const games = [
 
 function useDashboardStats() {
   const { authState } = useAuth();
-  const [totals, setTotals] = useState<{ gamesPlayed: number; bestStreak: number; totalScore: number } | null>(null);
+  const [totals, setTotals] = useState<{
+    gamesPlayed: number;
+    bestStreak: number;
+    totalScore: number;
+  } | null>(null);
 
   useEffect(() => {
     if (!authState.isAuthenticated || !authState.user) {
@@ -100,9 +104,21 @@ function useDashboardStats() {
       ];
     }
     return [
-      { label: "Games Played", value: totals.gamesPlayed.toString(), icon: Brain },
-      { label: "Best Streak", value: totals.bestStreak.toString(), icon: Sparkles },
-      { label: "Total Score", value: totals.totalScore.toLocaleString(), icon: Trophy },
+      {
+        label: "Games Played",
+        value: totals.gamesPlayed.toString(),
+        icon: Brain,
+      },
+      {
+        label: "Best Streak",
+        value: totals.bestStreak.toString(),
+        icon: Sparkles,
+      },
+      {
+        label: "Total Score",
+        value: totals.totalScore.toLocaleString(),
+        icon: Trophy,
+      },
     ];
   }, [totals]);
 

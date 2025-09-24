@@ -8,7 +8,14 @@ import { Input } from "@/components/ui/input";
 import { useSettings } from "@/contexts/SettingsContext";
 import { mapSettingsToWordConfig } from "@/lib/difficulty";
 import { WORD_LIST } from "@/data/word-list";
-import { ArrowLeft, RotateCcw, Shuffle, Check, X, Lightbulb } from "lucide-react";
+import {
+  ArrowLeft,
+  RotateCcw,
+  Shuffle,
+  Check,
+  X,
+  Lightbulb,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats } from "@/lib/user-stats";
@@ -32,14 +39,18 @@ function pickWord(min: number, max: number): string {
 
 function randomLetters(count: number) {
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
-  return Array.from({ length: count }, () =>
-    alphabet[Math.floor(Math.random() * alphabet.length)],
+  return Array.from(
+    { length: count },
+    () => alphabet[Math.floor(Math.random() * alphabet.length)],
   );
 }
 
 export default function WordBuilderGame() {
   const { settings } = useSettings();
-  const base = useMemo(() => mapSettingsToWordConfig(settings.difficulty), [settings.difficulty]);
+  const base = useMemo(
+    () => mapSettingsToWordConfig(settings.difficulty),
+    [settings.difficulty],
+  );
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
@@ -48,36 +59,43 @@ export default function WordBuilderGame() {
   const [targetWord, setTargetWord] = useState("");
   const [letters, setLetters] = useState<string[]>([]);
   const [guess, setGuess] = useState("");
-  const [message, setMessage] = useState<null | { ok: boolean; text: string }>(null);
+  const [message, setMessage] = useState<null | { ok: boolean; text: string }>(
+    null,
+  );
   const [usedIndices, setUsedIndices] = useState<number[]>([]);
 
   const difficultyLabel = useMemo(() => {
     if (settings.difficulty === "normal") return "Normal";
-    return settings.difficulty.charAt(0).toUpperCase() + settings.difficulty.slice(1);
+    return (
+      settings.difficulty.charAt(0).toUpperCase() + settings.difficulty.slice(1)
+    );
   }, [settings.difficulty]);
 
-  const buildRound = useCallback((nextRound: number) => {
-    const adaptOffset = base.adaptive ? Math.floor((nextRound - 1) / 3) : 0;
-    const min = Math.min(8, base.min + adaptOffset);
-    const max = Math.min(8, base.max + adaptOffset);
-    const extra = Math.min(6, base.extraLetters + Math.floor((nextRound - 1) / 2));
+  const buildRound = useCallback(
+    (nextRound: number) => {
+      const adaptOffset = base.adaptive ? Math.floor((nextRound - 1) / 3) : 0;
+      const min = Math.min(8, base.min + adaptOffset);
+      const max = Math.min(8, base.max + adaptOffset);
+      const extra = Math.min(
+        6,
+        base.extraLetters + Math.floor((nextRound - 1) / 2),
+      );
 
-    const word = pickWord(min, max);
-    const pool = shuffleArray([...
-      word.split(""),
-      ...randomLetters(extra),
-    ]);
+      const word = pickWord(min, max);
+      const pool = shuffleArray([...word.split(""), ...randomLetters(extra)]);
 
-    setTargetWord(word);
-    setLetters(pool);
-    setGuess("");
-    setUsedIndices([]);
-    setMessage(null);
-  }, [base.min, base.max, base.extraLetters, base.adaptive]);
+      setTargetWord(word);
+      setLetters(pool);
+      setGuess("");
+      setUsedIndices([]);
+      setMessage(null);
+    },
+    [base.min, base.max, base.extraLetters, base.adaptive],
+  );
 
   useEffect(() => {
     buildRound(1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.difficulty]);
 
   const handleChooseLetter = (index: number) => {
@@ -104,7 +122,10 @@ export default function WordBuilderGame() {
   const checkAnswer = () => {
     const ok = guess.toLowerCase() === targetWord.toLowerCase();
     if (ok) {
-      const gained = Math.max(10, targetWord.length * 10 + (letters.length - targetWord.length) * 2);
+      const gained = Math.max(
+        10,
+        targetWord.length * 10 + (letters.length - targetWord.length) * 2,
+      );
       setScore((s) => s + gained);
       setStreak((v) => v + 1);
       setMessage({ ok: true, text: `Correct! +${gained} points` });
@@ -154,7 +175,12 @@ export default function WordBuilderGame() {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold text-foreground">Word Builder</h1>
-          <Button variant="outline" size="sm" onClick={resetGame} className="gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetGame}
+            className="gap-2"
+          >
             <RotateCcw className="h-4 w-4" />
             New Game
           </Button>
@@ -182,7 +208,9 @@ export default function WordBuilderGame() {
           <Card className="bg-card/50">
             <CardContent className="p-4 flex items-center gap-2">
               <Lightbulb className="h-4 w-4 text-yellow-400" />
-              <div className="text-xs text-muted-foreground">Unscramble the letters to form a valid word</div>
+              <div className="text-xs text-muted-foreground">
+                Unscramble the letters to form a valid word
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -217,13 +245,26 @@ export default function WordBuilderGame() {
             </div>
 
             <div className="flex justify-center gap-3 pt-4">
-              <Button variant="outline" className="gap-2" onClick={shuffleLetters}>
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={shuffleLetters}
+              >
                 <Shuffle className="h-4 w-4" /> Shuffle
               </Button>
-              <Button variant="outline" className="gap-2" onClick={handleBackspace} disabled={guess.length === 0}>
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={handleBackspace}
+                disabled={guess.length === 0}
+              >
                 <X className="h-4 w-4" /> Backspace
               </Button>
-              <Button className="gap-2" onClick={checkAnswer} disabled={guess.length === 0}>
+              <Button
+                className="gap-2"
+                onClick={checkAnswer}
+                disabled={guess.length === 0}
+              >
                 <Check className="h-4 w-4" /> Submit
               </Button>
             </div>
@@ -237,10 +278,21 @@ export default function WordBuilderGame() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-center">
-              <Input readOnly value={guess.toUpperCase()} className="text-center text-lg font-bold max-w-md" />
+              <Input
+                readOnly
+                value={guess.toUpperCase()}
+                className="text-center text-lg font-bold max-w-md"
+              />
             </div>
             {message && (
-              <div className={cn("text-center mt-3 font-medium", message.ok ? "text-green-400" : "text-red-400")}>{message.text}</div>
+              <div
+                className={cn(
+                  "text-center mt-3 font-medium",
+                  message.ok ? "text-green-400" : "text-red-400",
+                )}
+              >
+                {message.text}
+              </div>
             )}
           </CardContent>
         </Card>
