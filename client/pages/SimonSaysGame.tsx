@@ -17,7 +17,7 @@ import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateGameStats } from "@/lib/user-stats";
+import { updateGameStats, logGamePlay } from "@/lib/user-stats";
 
 type GamePhase =
   | "setup"
@@ -193,6 +193,11 @@ export default function SimonSaysGame() {
             played: true,
             addScore: score,
             streakCandidate,
+          }).catch(() => {});
+          logGamePlay(authState.user.id, "simon-says", {
+            score,
+            round,
+            bestSequence: Math.max(sequence.length - 1, 0),
           }).catch(() => {});
         }
       }, 1000);
