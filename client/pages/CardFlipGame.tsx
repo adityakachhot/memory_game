@@ -47,6 +47,7 @@ export default function CardFlipGame() {
 
   const gameGridRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const hasRecordedPlayRef = useRef(false);
 
   // Map settings difficulty on mount and when settings change (if game not started)
   useEffect(() => {
@@ -132,7 +133,6 @@ export default function CardFlipGame() {
       const finalScore = getScore();
       const streakCandidate = difficultySettings[difficulty].pairs;
       updateGameStats(authState.user.id, "card-flip", {
-        played: true,
         addScore: finalScore,
         streakCandidate,
       }).catch(() => {});
@@ -142,7 +142,15 @@ export default function CardFlipGame() {
   }, [gameCompleted]);
 
   const handleCardClick = (cardId: number) => {
-    if (!gameStarted) setGameStarted(true);
+    if (!gameStarted) {
+      setGameStarted(true);
+      if (!hasRecordedPlayRef.current && authState.isAuthenticated && authState.user) {
+        hasRecordedPlayRef.current = true;
+        updateGameStats(authState.user.id, "card-flip", {
+          played: true,
+        }).catch(() => {});
+      }
+    }
 
     const card = cards.find((c) => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2)
