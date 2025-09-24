@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { mapSettingsToThreeLevel } from "@/lib/difficulty";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateGameStats } from "@/lib/user-stats";
+import { updateGameStats, logGamePlay } from "@/lib/user-stats";
 
 interface GameCard {
   id: number;
@@ -137,6 +137,12 @@ export default function CardFlipGame() {
       updateGameStats(authState.user.id, "card-flip", {
         addScore: finalScore,
         streakCandidate,
+      }).catch(() => {});
+      logGamePlay(authState.user.id, "card-flip", {
+        score: finalScore,
+        moves,
+        timeElapsed,
+        difficulty,
       }).catch(() => {});
     }
     // Only run when game becomes completed
