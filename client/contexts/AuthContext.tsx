@@ -43,9 +43,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Subscribe to Firebase auth state
   useEffect(() => {
+    let resolved = false;
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
       if (!fbUser) {
         setAuthState({ user: null, isAuthenticated: false, isLoading: false });
+        resolved = true;
         return;
       }
       const ref = doc(db, "users", fbUser.uid);
@@ -89,8 +91,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isAuthenticated: true,
         isLoading: false,
       });
+      resolved = true;
     });
-    return () => unsub();
+
+    const t = setTimeout(() => {
+      if (!resolved) {
+        setAuthState((s) => ({ ...s, isLoading: false }));
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(t);
+      unsub();
+    };
   }, []);
 
   const register = async (
