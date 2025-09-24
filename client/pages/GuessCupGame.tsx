@@ -8,7 +8,7 @@ import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateGameStats } from "@/lib/user-stats";
+import { updateGameStats, logGamePlay } from "@/lib/user-stats";
 
 interface Cup {
   id: number;
@@ -179,6 +179,14 @@ export default function GuessCupGame() {
         played: true,
         addScore: roundScore,
         streakCandidate: nextStreak,
+      }).catch(() => {});
+      logGamePlay(authState.user.id, "guess-cup", {
+        round,
+        gained: roundScore,
+        totalScoreAfter: isCorrect ? score + roundScore : score,
+        streakAfter: nextStreak,
+        correct: isCorrect,
+        cupCount,
       }).catch(() => {});
     }
 
