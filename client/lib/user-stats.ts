@@ -32,7 +32,8 @@ export async function updateGameStats(
       const prev: GameStats = snap.exists()
         ? (snap.data() as any)
         : { gamesPlayed: 0, bestStreak: 0, totalScore: 0 };
-      const next: GameStats = {
+      const next: GameStats & { gameId: GameId } = {
+        gameId,
         gamesPlayed: prev.gamesPlayed + (delta.played ? 1 : 0),
         bestStreak: Math.max(prev.bestStreak || 0, delta.streakCandidate || 0),
         totalScore: prev.totalScore + (delta.addScore || 0),
@@ -46,13 +47,13 @@ export async function updateGameStats(
     });
   } catch (e) {
     // Fallback to non-transactional increments (may not update bestStreak accurately without read)
-    const updates: Record<string, any> = { updatedAt: serverTimestamp() };
+    const updates: Record<string, any> = { updatedAt: serverTimestamp(), gameId };
     if (delta.played) updates.gamesPlayed = increment(1);
     if (typeof delta.addScore === "number")
       updates.totalScore = increment(delta.addScore);
     await setDoc(
       ref,
-      { gamesPlayed: 0, bestStreak: 0, totalScore: 0 },
+      { gameId, gamesPlayed: 0, bestStreak: 0, totalScore: 0 },
       { merge: true },
     );
     if (Object.keys(updates).length > 0) {
