@@ -58,6 +58,17 @@ const games = [
     borderColor: "border-emerald-500/30",
     href: "/game/word-builder",
   },
+  {
+    id: "picture-puzzle",
+    title: "Picture Puzzle",
+    description:
+      "Arrange shuffled image tiles. Starts at 3×3 with smooth transitions and new images each round.",
+    icon: ImageIcon,
+    difficulty: "Easy",
+    color: "from-pink-600/20 to-rose-800/20",
+    borderColor: "border-pink-500/30",
+    href: "/game/picture-puzzle",
+  },
 ];
 
 export default function Index() {
