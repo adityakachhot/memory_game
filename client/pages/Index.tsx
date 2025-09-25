@@ -12,8 +12,6 @@ import { Sparkles, Layers, Trophy, Brain, Palette, Type } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
-import { db } from "@/lib/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
 
 const games = [
   {
