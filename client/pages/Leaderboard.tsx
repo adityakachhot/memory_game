@@ -22,129 +22,34 @@ import {
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import {
+  collectionGroup,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { useAuth } from "@/contexts/AuthContext";
+import type { GameId } from "@/lib/user-stats";
 
 interface LeaderboardEntry {
   rank: number;
   name: string;
   score: number;
-  time?: string;
-  moves?: number;
   streak?: number;
   avatar: string;
   isCurrentUser?: boolean;
 }
 
-const cardFlipLeaderboard: LeaderboardEntry[] = [
-  {
-    rank: 1,
-    name: "MemoryMaster",
-    score: 2850,
-    time: "1:23",
-    moves: 18,
-    avatar: "🧠",
-    streak: 15,
-  },
-  {
-    rank: 2,
-    name: "FlipKing",
-    score: 2720,
-    time: "1:45",
-    moves: 22,
-    avatar: "👑",
-    streak: 12,
-  },
-  {
-    rank: 3,
-    name: "CardNinja",
-    score: 2680,
-    time: "1:52",
-    moves: 24,
-    avatar: "🥷",
-    streak: 8,
-  },
-  {
-    rank: 4,
-    name: "You",
-    score: 2340,
-    time: "2:15",
-    moves: 28,
-    avatar: "😎",
-    isCurrentUser: true,
-    streak: 6,
-  },
-  {
-    rank: 5,
-    name: "QuickFlip",
-    score: 2190,
-    time: "2:03",
-    moves: 26,
-    avatar: "⚡",
-    streak: 4,
-  },
-  {
-    rank: 6,
-    name: "BrainPower",
-    score: 2050,
-    time: "2:28",
-    moves: 32,
-    avatar: "🔥",
-    streak: 3,
-  },
-  {
-    rank: 7,
-    name: "MemoryPro",
-    score: 1920,
-    time: "2:45",
-    moves: 35,
-    avatar: "🎯",
-    streak: 2,
-  },
-  {
-    rank: 8,
-    name: "FlipMaster",
-    score: 1850,
-    time: "3:02",
-    moves: 38,
-    avatar: "🚀",
-    streak: 5,
-  },
-];
+const cardFlipLeaderboard: LeaderboardEntry[] = [];
 
-const cupGameLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, name: "CupChampion", score: 3200, streak: 18, avatar: "🏆" },
-  { rank: 2, name: "BallTracker", score: 2950, streak: 15, avatar: "👁️" },
-  { rank: 3, name: "ShellMaster", score: 2800, streak: 12, avatar: "🔮" },
-  {
-    rank: 4,
-    name: "You",
-    score: 2450,
-    streak: 9,
-    avatar: "😎",
-    isCurrentUser: true,
-  },
-  { rank: 5, name: "CupHunter", score: 2200, streak: 7, avatar: "🎪" },
-  { rank: 6, name: "EagleEye", score: 2100, streak: 6, avatar: "🦅" },
-  { rank: 7, name: "TrackingStar", score: 1950, streak: 5, avatar: "⭐" },
-  { rank: 8, name: "CupWizard", score: 1800, streak: 4, avatar: "🧙" },
-];
+const cupGameLeaderboard: LeaderboardEntry[] = [];
 
-const simonSaysLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, name: "ColorMaster", score: 3850, streak: 24, avatar: "🌈" },
-  { rank: 2, name: "SequenceKing", score: 3420, streak: 19, avatar: "👑" },
-  { rank: 3, name: "PatternPro", score: 3100, streak: 16, avatar: "🎨" },
-  {
-    rank: 4,
-    name: "You",
-    score: 2680,
-    streak: 12,
-    avatar: "😎",
-    isCurrentUser: true,
-  },
-  { rank: 5, name: "RhythmAce", score: 2350, streak: 10, avatar: "🎵" },
-  { rank: 6, name: "FlashGenius", score: 2120, streak: 8, avatar: "⚡" },
-  { rank: 7, name: "ColorWiz", score: 1980, streak: 7, avatar: "🧙" },
-  { rank: 8, name: "SimonFan", score: 1750, streak: 6, avatar: "🎯" },
-];
+const simonSaysLeaderboard: LeaderboardEntry[] = [];
 
 const achievements = [
   {
@@ -185,6 +90,64 @@ const achievements = [
   },
 ];
 
+function useLeaderboard(gameId: GameId) {
+  const { authState } = useAuth();
+  const [rows, setRows] = useState<LeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    async function run() {
+      try {
+        const cg = collectionGroup(db, "stats");
+        const q = query(
+          cg,
+          where("gameId", "==", gameId),
+          orderBy("totalScore", "desc"),
+          limit(20),
+        );
+        const snap = await getDocs(q);
+        const base: { uid: string; score: number; streak?: number }[] = [];
+        snap.forEach((d) => {
+          const parent = d.ref.parent.parent; // users/{uid}
+          const uid = parent ? parent.id : "";
+          const data = d.data() as any;
+          base.push({
+            uid,
+            score: data.totalScore || 0,
+            streak: data.bestStreak || 0,
+          });
+        });
+        const result: LeaderboardEntry[] = [];
+        for (let i = 0; i < base.length; i++) {
+          const e = base[i];
+          let name = "Player";
+          try {
+            if (e.uid) {
+              const uref = doc(db, "users", e.uid);
+              const u = await getDoc(uref);
+              const ud = u.exists() ? (u.data() as any) : null;
+              name = ud?.username || ud?.email?.split("@")[0] || name;
+            }
+          } catch {}
+          result.push({
+            rank: i + 1,
+            name,
+            score: e.score,
+            streak: e.streak,
+            avatar: name.slice(0, 1).toUpperCase(),
+            isCurrentUser: !!authState.user && e.uid === authState.user.id,
+          });
+        }
+        setRows(result);
+      } catch (e) {
+        setRows([]);
+      }
+    }
+    run();
+  }, [gameId, authState.user?.id]);
+
+  return rows;
+}
+
 export default function Leaderboard() {
   const [timeFilter, setTimeFilter] = useState("all-time");
 
@@ -216,13 +179,7 @@ export default function Leaderboard() {
     }
   };
 
-  const LeaderboardTable = ({
-    data,
-    gameType,
-  }: {
-    data: LeaderboardEntry[];
-    gameType: "card" | "cup";
-  }) => (
+  const LeaderboardTable = ({ data }: { data: LeaderboardEntry[] }) => (
     <div className="space-y-3">
       {data.map((entry) => (
         <Card
@@ -269,19 +226,7 @@ export default function Leaderboard() {
                       <Star className="h-3 w-3" />
                       {entry.score.toLocaleString()} pts
                     </div>
-                    {gameType === "card" && entry.time && (
-                      <>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {entry.time}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Zap className="h-3 w-3" />
-                          {entry.moves} moves
-                        </div>
-                      </>
-                    )}
-                    {entry.streak && (
+                    {typeof entry.streak === "number" && (
                       <div className="flex items-center gap-1">
                         <Target className="h-3 w-3" />
                         {entry.streak} streak
@@ -319,6 +264,10 @@ export default function Leaderboard() {
       ))}
     </div>
   );
+
+  const cfRows = useLeaderboard("card-flip");
+  const gcRows = useLeaderboard("guess-cup");
+  const ssRows = useLeaderboard("simon-says");
 
   return (
     <Layout>
@@ -372,12 +321,10 @@ export default function Leaderboard() {
                   <Layers className="h-5 w-5 text-primary" />
                   Card Flip Memory - Top Players
                 </CardTitle>
-                <CardDescription>
-                  Rankings based on highest scores in the card matching game
-                </CardDescription>
+                <CardDescription>Rankings based on total score</CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaderboardTable data={cardFlipLeaderboard} gameType="card" />
+                <LeaderboardTable data={cfRows} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -389,12 +336,10 @@ export default function Leaderboard() {
                   <Trophy className="h-5 w-5 text-primary" />
                   Guess the Cup - Top Players
                 </CardTitle>
-                <CardDescription>
-                  Rankings based on highest scores and longest streaks
-                </CardDescription>
+                <CardDescription>Rankings based on total score</CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaderboardTable data={cupGameLeaderboard} gameType="cup" />
+                <LeaderboardTable data={gcRows} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -406,12 +351,10 @@ export default function Leaderboard() {
                   <Palette className="h-5 w-5 text-primary" />
                   Simon Says - Top Players
                 </CardTitle>
-                <CardDescription>
-                  Rankings based on longest sequences and highest scores
-                </CardDescription>
+                <CardDescription>Rankings based on total score</CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaderboardTable data={simonSaysLeaderboard} gameType="cup" />
+                <LeaderboardTable data={ssRows} />
               </CardContent>
             </Card>
           </TabsContent>

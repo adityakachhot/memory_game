@@ -1,7 +1,15 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics, isSupported as analyticsIsSupported } from "firebase/analytics";
-import { getAuth, setPersistence, browserLocalPersistence, indexedDBLocalPersistence } from "firebase/auth";
+import {
+  getAnalytics,
+  isSupported as analyticsIsSupported,
+} from "firebase/analytics";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  indexedDBLocalPersistence,
+} from "firebase/auth";
 
 // Firebase configuration provided by the user
 const firebaseConfig = {
@@ -22,7 +30,9 @@ export const db = getFirestore(app);
 
 // Auth with local persistence
 export const auth = getAuth(app);
-setPersistence(auth, indexedDBLocalPersistence).catch(() => setPersistence(auth, browserLocalPersistence).catch(() => {}));
+setPersistence(auth, indexedDBLocalPersistence).catch(() =>
+  setPersistence(auth, browserLocalPersistence).catch(() => {}),
+);
 
 // Analytics (only on supported browsers and client-side)
 export const analyticsPromise = (() => {

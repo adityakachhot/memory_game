@@ -8,6 +8,8 @@ import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { mapSettingsToThreeLevel } from "@/lib/difficulty";
+import { useAuth } from "@/contexts/AuthContext";
+import { updateGameStats, logGamePlay } from "@/lib/user-stats";
 
 interface GameCard {
   id: number;
@@ -33,6 +35,7 @@ const cardSymbols = [
 
 export default function CardFlipGame() {
   const { settings } = useSettings();
+  const { authState } = useAuth();
   const [cards, setCards] = useState<GameCard[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -40,10 +43,13 @@ export default function CardFlipGame() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
+    "easy",
+  );
 
   const gameGridRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const hasRecordedPlayRef = useRef(false);
 
   // Map settings difficulty on mount and when settings change (if game not started)
   useEffect(() => {
@@ -124,8 +130,39 @@ export default function CardFlipGame() {
     }
   }, [matches, difficulty]);
 
+  useEffect(() => {
+    if (gameCompleted && authState.isAuthenticated && authState.user) {
+      const finalScore = getScore();
+      const streakCandidate = difficultySettings[difficulty].pairs;
+      updateGameStats(authState.user.id, "card-flip", {
+        addScore: finalScore,
+        streakCandidate,
+      }).catch(() => {});
+      logGamePlay(authState.user.id, "card-flip", {
+        score: finalScore,
+        moves,
+        timeElapsed,
+        difficulty,
+      }).catch(() => {});
+    }
+    // Only run when game becomes completed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameCompleted]);
+
   const handleCardClick = (cardId: number) => {
-    if (!gameStarted) setGameStarted(true);
+    if (!gameStarted) {
+      setGameStarted(true);
+      if (
+        !hasRecordedPlayRef.current &&
+        authState.isAuthenticated &&
+        authState.user
+      ) {
+        hasRecordedPlayRef.current = true;
+        updateGameStats(authState.user.id, "card-flip", {
+          played: true,
+        }).catch(() => {});
+      }
+    }
 
     const card = cards.find((c) => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched || flippedCards.length >= 2)

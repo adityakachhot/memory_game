@@ -36,20 +36,20 @@ export default function RegisterModal({
   const { register } = useAuth();
 
   const validateForm = () => {
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Enter a valid email address");
+      return false;
+    }
     if (!username.trim()) {
       setError("Username is required");
       return false;
     }
     if (username.length < 3) {
       setError("Username must be at least 3 characters long");
-      return false;
-    }
-    if (!email.trim()) {
-      setError("Email is required");
-      return false;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Please enter a valid email");
       return false;
     }
     if (!password) {
@@ -107,7 +107,8 @@ export default function RegisterModal({
   };
 
   const isPasswordValid = password.length >= 6;
-  const doPasswordsMatch = password === confirmPassword && confirmPassword.length > 0;
+  const doPasswordsMatch =
+    password === confirmPassword && confirmPassword.length > 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -127,6 +128,19 @@ export default function RegisterModal({
           )}
 
           <div className="space-y-2">
+            <Label htmlFor="register-email">Email</Label>
+            <Input
+              id="register-email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="register-username">Username</Label>
             <Input
               id="register-username"
@@ -142,19 +156,6 @@ export default function RegisterModal({
                 Username must be at least 3 characters long
               </p>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="register-email">Email</Label>
-            <Input
-              id="register-email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-              required
-            />
           </div>
 
           <div className="space-y-2">
@@ -191,7 +192,11 @@ export default function RegisterModal({
                 ) : (
                   <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
                 )}
-                <span className={isPasswordValid ? "text-green-500" : "text-muted-foreground"}>
+                <span
+                  className={
+                    isPasswordValid ? "text-green-500" : "text-muted-foreground"
+                  }
+                >
                   At least 6 characters
                 </span>
               </div>
@@ -232,7 +237,13 @@ export default function RegisterModal({
                 ) : (
                   <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
                 )}
-                <span className={doPasswordsMatch ? "text-green-500" : "text-muted-foreground"}>
+                <span
+                  className={
+                    doPasswordsMatch
+                      ? "text-green-500"
+                      : "text-muted-foreground"
+                  }
+                >
                   Passwords match
                 </span>
               </div>

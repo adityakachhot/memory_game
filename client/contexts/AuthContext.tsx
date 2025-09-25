@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
@@ -19,8 +25,15 @@ export interface AuthState {
 
 interface AuthContextType {
   authState: AuthState;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (username: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+  register: (
+    username: string,
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
@@ -37,9 +50,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Subscribe to Firebase auth state
   useEffect(() => {
+    let resolved = false;
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
       if (!fbUser) {
         setAuthState({ user: null, isAuthenticated: false, isLoading: false });
+        resolved = true;
         return;
       }
       const ref = doc(db, "users", fbUser.uid);
@@ -55,62 +70,125 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           profile = {
             username: data.username || profile.username,
             email: data.email || profile.email,
-            createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt || profile.createdAt,
+            createdAt: data.createdAt?.toDate
+              ? data.createdAt.toDate().toISOString()
+              : data.createdAt || profile.createdAt,
           };
         } else {
-          await setDoc(ref, { username: profile.username, email: profile.email, createdAt: serverTimestamp() }, { merge: true });
+          await setDoc(
+            ref,
+            {
+              username: profile.username,
+              email: profile.email,
+              createdAt: serverTimestamp(),
+            },
+            { merge: true },
+          );
         }
       } catch (e) {
         console.warn("Firestore profile access failed (using fallback):", e);
       }
       setAuthState({
-        user: { id: fbUser.uid, username: profile.username, email: profile.email, createdAt: profile.createdAt },
+        user: {
+          id: fbUser.uid,
+          username: profile.username,
+          email: profile.email,
+          createdAt: profile.createdAt,
+        },
         isAuthenticated: true,
         isLoading: false,
       });
+      resolved = true;
     });
-    return () => unsub();
+
+    const t = setTimeout(() => {
+      if (!resolved) {
+        setAuthState((s) => ({ ...s, isLoading: false }));
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(t);
+      unsub();
+    };
   }, []);
 
-  const register = async (username: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; error?: string }> => {
     if (!username.trim() || !email.trim() || !password.trim()) {
-      return { success: false, error: "Username, email and password are required" };
+      return {
+        success: false,
+        error: "Username, email and password are required",
+      };
     }
     if (username.length < 3) {
-      return { success: false, error: "Username must be at least 3 characters long" };
+      return {
+        success: false,
+        error: "Username must be at least 3 characters long",
+      };
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { success: false, error: "Please enter a valid email" };
     }
     if (password.length < 6) {
-      return { success: false, error: "Password must be at least 6 characters long" };
+      return {
+        success: false,
+        error: "Password must be at least 6 characters long",
+      };
     }
-    let cred: Awaited<ReturnType<typeof createUserWithEmailAndPassword>> | null = null;
+    let cred: Awaited<
+      ReturnType<typeof createUserWithEmailAndPassword>
+    > | null = null;
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
-        return { success: false, error: "No internet connection. Please reconnect and try again." };
+        return {
+          success: false,
+          error: "No internet connection. Please reconnect and try again.",
+        };
       }
       cred = await createUserWithEmailAndPassword(auth, email, password);
       if (cred.user) {
         await updateProfile(cred.user, { displayName: username.trim() });
         const ref = doc(db, "users", cred.user.uid);
-        await setDoc(ref, { username: username.trim(), email: email.trim(), createdAt: serverTimestamp() }, { merge: true });
+        await setDoc(
+          ref,
+          {
+            username: username.trim(),
+            email: email.trim(),
+            createdAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
       }
       return { success: true };
     } catch (error: any) {
       let msg = "Registration failed. Please try again.";
       if (error && typeof error.code === "string") {
-        if (error.code === "auth/email-already-in-use") msg = "Email already in use";
-        else if (error.code === "auth/invalid-email") msg = "Invalid email address";
-        else if (error.code === "auth/weak-password") msg = "Password is too weak";
+        if (error.code === "auth/email-already-in-use")
+          msg = "Email already in use";
+        else if (error.code === "auth/invalid-email")
+          msg = "Invalid email address";
+        else if (error.code === "auth/weak-password")
+          msg = "Password is too weak";
         else if (error.code === "auth/network-request-failed") {
-          const host = typeof window !== "undefined" ? window.location.hostname : "your-domain";
+          const host =
+            typeof window !== "undefined"
+              ? window.location.hostname
+              : "your-domain";
           msg = `Network error. Ensure Email/Password is enabled and add ${host} to Firebase Auth Authorized domains. Also check ad blockers.`;
         } else if (error.code === "permission-denied") {
-          msg = "Firestore rules block writes. Allow users/{uid} for authenticated users.";
+          msg =
+            "Firestore rules block writes. Allow users/{uid} for authenticated users.";
         }
-      } else if (typeof error?.message === "string" && error.message.includes("insufficient permissions")) {
-        msg = "Firestore rules block access. Update rules to allow users/{uid}.";
+      } else if (
+        typeof error?.message === "string" &&
+        error.message.includes("insufficient permissions")
+      ) {
+        msg =
+          "Firestore rules block access. Update rules to allow users/{uid}.";
       }
       if (cred?.user) {
         try {
@@ -125,24 +203,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; error?: string }> => {
     if (!email.trim() || !password.trim()) {
       return { success: false, error: "Email and password are required" };
     }
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
-        return { success: false, error: "No internet connection. Please reconnect and try again." };
+        return {
+          success: false,
+          error: "No internet connection. Please reconnect and try again.",
+        };
       }
       await signInWithEmailAndPassword(auth, email.trim(), password);
       return { success: true };
     } catch (error: any) {
       let msg = "Login failed. Please try again.";
       if (error && typeof error.code === "string") {
-        if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") msg = "Invalid email or password";
-        else if (error.code === "auth/user-not-found") msg = "No account found for this email";
-        else if (error.code === "auth/too-many-requests") msg = "Too many attempts. Try again later";
+        if (
+          error.code === "auth/invalid-credential" ||
+          error.code === "auth/wrong-password"
+        )
+          msg = "Invalid email or password";
+        else if (error.code === "auth/user-not-found")
+          msg = "No account found for this email";
+        else if (error.code === "auth/too-many-requests")
+          msg = "Too many attempts. Try again later";
         else if (error.code === "auth/network-request-failed") {
-          const host = typeof window !== "undefined" ? window.location.hostname : "your-domain";
+          const host =
+            typeof window !== "undefined"
+              ? window.location.hostname
+              : "your-domain";
           msg = `Network error. Add ${host} to Firebase Auth Authorized domains and check connectivity/ad blockers.`;
         }
       }
