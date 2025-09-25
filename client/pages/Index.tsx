@@ -63,6 +63,10 @@ export default function Index() {
   return (
     <Layout>
       <div className="space-y-8 overflow-hidden">
+        {/* Page toolbar */}
+        <div className="flex justify-end">
+          <ThemeToggle />
+        </div>
         {/* Hero Section */}
         <div className="text-center space-y-4 animate-fade-in-up">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-float animate-glow">
