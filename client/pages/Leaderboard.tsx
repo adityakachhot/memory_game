@@ -22,6 +22,10 @@ import {
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { collectionGroup, getDocs, limit, orderBy, query, where, doc, getDoc } from "firebase/firestore";
+import { useAuth } from "@/contexts/AuthContext";
+import type { GameId } from "@/lib/user-stats";
 
 interface LeaderboardEntry {
   rank: number;
