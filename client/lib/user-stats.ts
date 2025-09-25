@@ -11,7 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-export type GameId = "card-flip" | "guess-cup" | "simon-says" | "word-builder";
+export type GameId = "card-flip" | "guess-cup" | "simon-says" | "word-builder" | "picture-puzzle";
 
 export interface GameStats {
   gamesPlayed: number;
