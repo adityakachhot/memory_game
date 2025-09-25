@@ -62,7 +62,6 @@ const games = [
 
 
 export default function Index() {
-  const stats = useDashboardStats();
   return (
     <Layout>
       <div className="space-y-8 overflow-hidden">
@@ -75,34 +74,6 @@ export default function Index() {
             Challenge your mind with our collection of memory games. Train your
             brain, improve your focus, and compete with others.
           </p>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animation-delay-600">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card
-                key={stat.label}
-                className="stat-card bg-card/50 border-border cursor-pointer transition-all duration-500 hover:bg-card/70 hover:scale-105 hover:shadow-xl hover:shadow-primary/20 animate-fade-in-up"
-                style={{ animationDelay: `${600 + index * 150}ms` }}
-              >
-                <CardContent className="p-6 flex items-center gap-4">
-                  <div className="stat-icon p-3 rounded-lg bg-primary/10 animate-bounce-gentle hover:animate-pulse transition-all duration-300 hover:bg-primary/20 hover:scale-110">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground hover:text-primary transition-colors">
-                      {stat.value}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {stat.label}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
         </div>
 
         {/* Game Selection */}
