@@ -8,10 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Layers, Trophy, Brain, Palette, Type } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Layers, Trophy, Brain, Palette, Type } from "lucide-react";
 import Layout from "@/components/Layout";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const games = [
   {
