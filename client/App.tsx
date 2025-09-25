@@ -16,6 +16,7 @@ import SimonSaysGame from "./pages/SimonSaysGame";
 import Settings from "./pages/Settings";
 import Leaderboard from "./pages/Leaderboard";
 import WordBuilderGame from "./pages/WordBuilderGame";
+import PicturePuzzleGame from "./pages/PicturePuzzleGame";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/game/word-builder" element={<WordBuilderGame />} />
+              <Route path="/game/picture-puzzle" element={<PicturePuzzleGame />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
