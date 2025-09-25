@@ -159,19 +159,7 @@ export default function Leaderboard() {
                       <Star className="h-3 w-3" />
                       {entry.score.toLocaleString()} pts
                     </div>
-                    {gameType === "card" && entry.time && (
-                      <>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {entry.time}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Zap className="h-3 w-3" />
-                          {entry.moves} moves
-                        </div>
-                      </>
-                    )}
-                    {entry.streak && (
+                    {typeof entry.streak === "number" && (
                       <div className="flex items-center gap-1">
                         <Target className="h-3 w-3" />
                         {entry.streak} streak
