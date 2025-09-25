@@ -38,23 +38,7 @@ interface LeaderboardEntry {
 
 const cardFlipLeaderboard: LeaderboardEntry[] = [];
 
-const cupGameLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, name: "CupChampion", score: 3200, streak: 18, avatar: "🏆" },
-  { rank: 2, name: "BallTracker", score: 2950, streak: 15, avatar: "👁️" },
-  { rank: 3, name: "ShellMaster", score: 2800, streak: 12, avatar: "🔮" },
-  {
-    rank: 4,
-    name: "You",
-    score: 2450,
-    streak: 9,
-    avatar: "😎",
-    isCurrentUser: true,
-  },
-  { rank: 5, name: "CupHunter", score: 2200, streak: 7, avatar: "🎪" },
-  { rank: 6, name: "EagleEye", score: 2100, streak: 6, avatar: "🦅" },
-  { rank: 7, name: "TrackingStar", score: 1950, streak: 5, avatar: "⭐" },
-  { rank: 8, name: "CupWizard", score: 1800, streak: 4, avatar: "🧙" },
-];
+const cupGameLeaderboard: LeaderboardEntry[] = [];
 
 const simonSaysLeaderboard: LeaderboardEntry[] = [
   { rank: 1, name: "ColorMaster", score: 3850, streak: 24, avatar: "🌈" },
