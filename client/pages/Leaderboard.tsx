@@ -304,11 +304,11 @@ export default function Leaderboard() {
                   Card Flip Memory - Top Players
                 </CardTitle>
                 <CardDescription>
-                  Rankings based on highest scores in the card matching game
+                  Rankings based on total score
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaderboardTable data={cardFlipLeaderboard} gameType="card" />
+                <LeaderboardTable data={cfRows} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -321,11 +321,11 @@ export default function Leaderboard() {
                   Guess the Cup - Top Players
                 </CardTitle>
                 <CardDescription>
-                  Rankings based on highest scores and longest streaks
+                  Rankings based on total score
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaderboardTable data={cupGameLeaderboard} gameType="cup" />
+                <LeaderboardTable data={gcRows} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -338,11 +338,11 @@ export default function Leaderboard() {
                   Simon Says - Top Players
                 </CardTitle>
                 <CardDescription>
-                  Rankings based on longest sequences and highest scores
+                  Rankings based on total score
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaderboardTable data={simonSaysLeaderboard} gameType="cup" />
+                <LeaderboardTable data={ssRows} />
               </CardContent>
             </Card>
           </TabsContent>
