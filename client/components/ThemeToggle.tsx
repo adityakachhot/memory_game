@@ -4,7 +4,7 @@ import { Moon, Sun } from "lucide-react";
 
 export default function ThemeToggle() {
   const { settings, updateSettings } = useSettings();
-  const isDark = settings.theme === "dark" || (settings.theme !== "light" && document.documentElement.classList.contains("dark"));
+  const isDark = settings.theme === "dark";
 
   const toggle = () => {
     updateSettings({ theme: isDark ? "light" : "dark" });
