@@ -60,68 +60,6 @@ const games = [
   },
 ];
 
-function useDashboardStats() {
-  const { authState } = useAuth();
-  const [totals, setTotals] = useState<{
-    gamesPlayed: number;
-    bestStreak: number;
-    totalScore: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!authState.isAuthenticated || !authState.user) {
-      setTotals(null);
-      return;
-    }
-    const statsRef = collection(db, "users", authState.user.id, "stats");
-    const unsub = onSnapshot(
-      statsRef,
-      (snaps) => {
-        let gamesPlayed = 0;
-        let totalScore = 0;
-        let bestStreak = 0;
-        snaps.forEach((d) => {
-          const s = d.data() as any;
-          gamesPlayed += s.gamesPlayed || 0;
-          totalScore += s.totalScore || 0;
-          bestStreak = Math.max(bestStreak, s.bestStreak || 0);
-        });
-        setTotals({ gamesPlayed, totalScore, bestStreak });
-      },
-      () => setTotals(null),
-    );
-    return () => unsub();
-  }, [authState.isAuthenticated, authState.user?.id]);
-
-  const stats = useMemo(() => {
-    if (!totals) {
-      return [
-        { label: "Games Played", value: "—", icon: Brain },
-        { label: "Best Streak", value: "—", icon: Sparkles },
-        { label: "Total Score", value: "—", icon: Trophy },
-      ];
-    }
-    return [
-      {
-        label: "Games Played",
-        value: totals.gamesPlayed.toString(),
-        icon: Brain,
-      },
-      {
-        label: "Best Streak",
-        value: totals.bestStreak.toString(),
-        icon: Sparkles,
-      },
-      {
-        label: "Total Score",
-        value: totals.totalScore.toLocaleString(),
-        icon: Trophy,
-      },
-    ];
-  }, [totals]);
-
-  return stats;
-}
 
 export default function Index() {
   const stats = useDashboardStats();
