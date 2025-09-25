@@ -247,6 +247,10 @@ export default function Leaderboard() {
     </div>
   );
 
+  const cfRows = useLeaderboard("card-flip");
+  const gcRows = useLeaderboard("guess-cup");
+  const ssRows = useLeaderboard("simon-says");
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
