@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  signInAnonymously,
 } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -59,8 +60,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       const ref = doc(db, "users", fbUser.uid);
       let profile: { username: string; email: string; createdAt?: any } = {
-        username: fbUser.displayName || fbUser.email?.split("@")[0] || "Player",
-        email: fbUser.email || "",
+        username:
+          fbUser.displayName ||
+          fbUser.email?.split("@")[0] ||
+          (fbUser.isAnonymous ? "Guest" : "Player"),
+        email: fbUser.email || (fbUser.isAnonymous ? "" : ""),
         createdAt: new Date().toISOString(),
       };
       try {
@@ -111,6 +115,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       clearTimeout(t);
       unsub();
     };
+  }, []);
+
+  // Auto sign-in anonymously to allow storing scores for guests
+  useEffect(() => {
+    if (!auth.currentUser) {
+      signInAnonymously(auth).catch(() => {});
+    }
   }, []);
 
   const register = async (
