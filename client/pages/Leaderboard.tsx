@@ -112,13 +112,7 @@ export default function Leaderboard() {
     }
   };
 
-  const LeaderboardTable = ({
-    data,
-    gameType,
-  }: {
-    data: LeaderboardEntry[];
-    gameType: "card" | "cup";
-  }) => (
+  const LeaderboardTable = ({ data }: { data: LeaderboardEntry[] }) => (
     <div className="space-y-3">
       {data.map((entry) => (
         <Card
