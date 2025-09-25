@@ -26,6 +26,7 @@ export async function updateGameStats(
   delta: { addScore?: number; played?: boolean; streakCandidate?: number },
 ) {
   const ref = doc(db, "users", uid, "stats", gameId);
+  const userRef = doc(db, "users", uid);
   try {
     await runTransaction(db, async (tx) => {
       const snap = await tx.get(ref);
@@ -43,6 +44,19 @@ export async function updateGameStats(
         tx.set(ref, next, { merge: true });
       } else {
         tx.update(ref, next);
+      }
+
+      // Maintain aggregate totals on users/{uid}
+      const userSnap = await tx.get(userRef);
+      if (!userSnap.exists()) {
+        tx.set(userRef, { totalScore: 0, gamesPlayed: 0 }, { merge: true });
+      }
+      const userUpdates: Record<string, any> = {};
+      if (delta.played) userUpdates.gamesPlayed = increment(1);
+      if (typeof delta.addScore === "number")
+        userUpdates.totalScore = increment(delta.addScore);
+      if (Object.keys(userUpdates).length) {
+        tx.update(userRef, userUpdates);
       }
     });
   } catch (e) {
@@ -67,8 +81,21 @@ export async function updateGameStats(
       }
     }
     if (typeof delta.streakCandidate === "number") {
-      // Attempt to set bestStreak if it's likely higher (safe default is to keep existing if unknown)
       await setDoc(ref, { bestStreak: delta.streakCandidate }, { merge: true });
+    }
+
+    // Also update aggregate user totals
+    const userUpdates: Record<string, any> = {};
+    if (delta.played) userUpdates.gamesPlayed = increment(1);
+    if (typeof delta.addScore === "number")
+      userUpdates.totalScore = increment(delta.addScore);
+    if (Object.keys(userUpdates).length) {
+      await setDoc(userRef, { totalScore: 0, gamesPlayed: 0 }, { merge: true });
+      try {
+        await updateDoc(userRef, userUpdates);
+      } catch (_) {
+        await setDoc(userRef, userUpdates, { merge: true });
+      }
     }
   }
 }
