@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Layers, Trophy, Brain, Palette, Type } from "lucide-react";
+import { Layers, Trophy, Brain, Palette, Type, Image as ImageIcon } from "lucide-react";
 import Layout from "@/components/Layout";
 import ThemeToggle from "@/components/ThemeToggle";
 import AuthButtons from "@/components/AuthButtons";
