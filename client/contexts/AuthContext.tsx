@@ -85,6 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               username: profile.username,
               email: profile.email,
               createdAt: serverTimestamp(),
+              totalScore: 0,
+              gamesPlayed: 0,
             },
             { merge: true },
           );
@@ -170,6 +172,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             username: username.trim(),
             email: email.trim(),
             createdAt: serverTimestamp(),
+            totalScore: 0,
+            gamesPlayed: 0,
           },
           { merge: true },
         );
