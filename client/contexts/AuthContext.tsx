@@ -119,10 +119,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  // Auto sign-in anonymously to allow storing scores for guests
+  // Auto sign-in anonymously to allow storing scores for guests (skip if it fails once)
   useEffect(() => {
-    if (!auth.currentUser) {
-      signInAnonymously(auth).catch(() => {});
+    const skip = typeof window !== "undefined" && sessionStorage.getItem("mm-skip-anon") === "1";
+    if (!auth.currentUser && !skip) {
+      signInAnonymously(auth).catch(() => {
+        try {
+          sessionStorage.setItem("mm-skip-anon", "1");
+        } catch {}
+      });
     }
   }, []);
 
