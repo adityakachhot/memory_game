@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Layers, Trophy, Brain, Palette, Type } from "lucide-react";
 import Layout from "@/components/Layout";
 import ThemeToggle from "@/components/ThemeToggle";
+import AuthButtons from "@/components/AuthButtons";
 
 const games = [
   {
@@ -64,7 +65,8 @@ export default function Index() {
     <Layout>
       <div className="space-y-8 overflow-hidden">
         {/* Page toolbar */}
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-2">
+          <AuthButtons />
           <ThemeToggle />
         </div>
         {/* Hero Section */}
