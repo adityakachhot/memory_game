@@ -27,8 +27,6 @@ interface LeaderboardEntry {
   rank: number;
   name: string;
   score: number;
-  time?: string;
-  moves?: number;
   streak?: number;
   avatar: string;
   isCurrentUser?: boolean;
