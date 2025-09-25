@@ -40,23 +40,7 @@ const cardFlipLeaderboard: LeaderboardEntry[] = [];
 
 const cupGameLeaderboard: LeaderboardEntry[] = [];
 
-const simonSaysLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, name: "ColorMaster", score: 3850, streak: 24, avatar: "🌈" },
-  { rank: 2, name: "SequenceKing", score: 3420, streak: 19, avatar: "👑" },
-  { rank: 3, name: "PatternPro", score: 3100, streak: 16, avatar: "🎨" },
-  {
-    rank: 4,
-    name: "You",
-    score: 2680,
-    streak: 12,
-    avatar: "😎",
-    isCurrentUser: true,
-  },
-  { rank: 5, name: "RhythmAce", score: 2350, streak: 10, avatar: "🎵" },
-  { rank: 6, name: "FlashGenius", score: 2120, streak: 8, avatar: "⚡" },
-  { rank: 7, name: "ColorWiz", score: 1980, streak: 7, avatar: "🧙" },
-  { rank: 8, name: "SimonFan", score: 1750, streak: 6, avatar: "🎯" },
-];
+const simonSaysLeaderboard: LeaderboardEntry[] = [];
 
 const achievements = [
   {
