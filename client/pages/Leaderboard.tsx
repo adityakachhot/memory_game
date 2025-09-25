@@ -81,6 +81,55 @@ const achievements = [
   },
 ];
 
+function useLeaderboard(gameId: GameId) {
+  const { authState } = useAuth();
+  const [rows, setRows] = useState<LeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    async function run() {
+      try {
+        const cg = collectionGroup(db, "stats");
+        const q = query(cg, where("gameId", "==", gameId), orderBy("totalScore", "desc"), limit(20));
+        const snap = await getDocs(q);
+        const base: { uid: string; score: number; streak?: number }[] = [];
+        snap.forEach((d) => {
+          const parent = d.ref.parent.parent; // users/{uid}
+          const uid = parent ? parent.id : "";
+          const data = d.data() as any;
+          base.push({ uid, score: data.totalScore || 0, streak: data.bestStreak || 0 });
+        });
+        const result: LeaderboardEntry[] = [];
+        for (let i = 0; i < base.length; i++) {
+          const e = base[i];
+          let name = "Player";
+          try {
+            if (e.uid) {
+              const uref = doc(db, "users", e.uid);
+              const u = await getDoc(uref);
+              const ud = u.exists() ? (u.data() as any) : null;
+              name = ud?.username || ud?.email?.split("@")[0] || name;
+            }
+          } catch {}
+          result.push({
+            rank: i + 1,
+            name,
+            score: e.score,
+            streak: e.streak,
+            avatar: name.slice(0, 1).toUpperCase(),
+            isCurrentUser: !!authState.user && e.uid === authState.user.id,
+          });
+        }
+        setRows(result);
+      } catch (e) {
+        setRows([]);
+      }
+    }
+    run();
+  }, [gameId, authState.user?.id]);
+
+  return rows;
+}
+
 export default function Leaderboard() {
   const [timeFilter, setTimeFilter] = useState("all-time");
 
