@@ -23,7 +23,16 @@ import {
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { db } from "@/lib/firebase";
-import { collectionGroup, getDocs, limit, orderBy, query, where, doc, getDoc } from "firebase/firestore";
+import {
+  collectionGroup,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
 import type { GameId } from "@/lib/user-stats";
 
@@ -89,14 +98,23 @@ function useLeaderboard(gameId: GameId) {
     async function run() {
       try {
         const cg = collectionGroup(db, "stats");
-        const q = query(cg, where("gameId", "==", gameId), orderBy("totalScore", "desc"), limit(20));
+        const q = query(
+          cg,
+          where("gameId", "==", gameId),
+          orderBy("totalScore", "desc"),
+          limit(20),
+        );
         const snap = await getDocs(q);
         const base: { uid: string; score: number; streak?: number }[] = [];
         snap.forEach((d) => {
           const parent = d.ref.parent.parent; // users/{uid}
           const uid = parent ? parent.id : "";
           const data = d.data() as any;
-          base.push({ uid, score: data.totalScore || 0, streak: data.bestStreak || 0 });
+          base.push({
+            uid,
+            score: data.totalScore || 0,
+            streak: data.bestStreak || 0,
+          });
         });
         const result: LeaderboardEntry[] = [];
         for (let i = 0; i < base.length; i++) {
@@ -303,9 +321,7 @@ export default function Leaderboard() {
                   <Layers className="h-5 w-5 text-primary" />
                   Card Flip Memory - Top Players
                 </CardTitle>
-                <CardDescription>
-                  Rankings based on total score
-                </CardDescription>
+                <CardDescription>Rankings based on total score</CardDescription>
               </CardHeader>
               <CardContent>
                 <LeaderboardTable data={cfRows} />
@@ -320,9 +336,7 @@ export default function Leaderboard() {
                   <Trophy className="h-5 w-5 text-primary" />
                   Guess the Cup - Top Players
                 </CardTitle>
-                <CardDescription>
-                  Rankings based on total score
-                </CardDescription>
+                <CardDescription>Rankings based on total score</CardDescription>
               </CardHeader>
               <CardContent>
                 <LeaderboardTable data={gcRows} />
@@ -337,9 +351,7 @@ export default function Leaderboard() {
                   <Palette className="h-5 w-5 text-primary" />
                   Simon Says - Top Players
                 </CardTitle>
-                <CardDescription>
-                  Rankings based on total score
-                </CardDescription>
+                <CardDescription>Rankings based on total score</CardDescription>
               </CardHeader>
               <CardContent>
                 <LeaderboardTable data={ssRows} />

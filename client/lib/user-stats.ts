@@ -47,7 +47,10 @@ export async function updateGameStats(
     });
   } catch (e) {
     // Fallback to non-transactional increments (may not update bestStreak accurately without read)
-    const updates: Record<string, any> = { updatedAt: serverTimestamp(), gameId };
+    const updates: Record<string, any> = {
+      updatedAt: serverTimestamp(),
+      gameId,
+    };
     if (delta.played) updates.gamesPlayed = increment(1);
     if (typeof delta.addScore === "number")
       updates.totalScore = increment(delta.addScore);

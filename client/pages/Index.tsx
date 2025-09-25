@@ -60,7 +60,6 @@ const games = [
   },
 ];
 
-
 export default function Index() {
   return (
     <Layout>
