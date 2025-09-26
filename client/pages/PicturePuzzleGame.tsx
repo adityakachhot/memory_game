@@ -131,7 +131,7 @@ export default function PicturePuzzleGame() {
       [copy[empty], copy[idx]] = [copy[idx], copy[empty]];
       return copy;
     });
-    playSound("move", 0.5);
+    if (true) {}
     setMoves((m) => m + 1);
   };
 
