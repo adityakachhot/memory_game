@@ -219,7 +219,7 @@ export default function PicturePuzzleGame() {
                   <img
                     src={imageUrl}
                     alt="Reference"
-                    className="w-40 h-40 object-cover rounded-md border"
+                    className="w-40 h-40 object-cover rounded-md border bg-muted"
                   />
                 </div>
               </div>
