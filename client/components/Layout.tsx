@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Brain, Trophy, Settings, Home, Menu, X, Users } from "lucide-react";
+import AuthButtons from "./AuthButtons";
 import { cn } from "@/lib/utils";
 
 interface LayoutProps {
@@ -100,9 +101,7 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                   );
                 })}
-                {/* Auth buttons on mobile */}
-                {/* eslint-disable-next-line react/jsx-no-undef */}
-                {/**/}
+                <AuthButtons />
               </div>
             </div>
           </header>
