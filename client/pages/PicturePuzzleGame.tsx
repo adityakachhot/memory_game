@@ -70,6 +70,7 @@ export default function PicturePuzzleGame() {
   const [moves, setMoves] = useState(0);
   const [imageUrl, setImageUrl] = useState<string>(() => IMAGES[Math.floor(Math.random() * IMAGES.length)]);
   const { authState } = useAuth();
+  const { settings } = useSettings();
 
   const isSolved = useMemo(() => {
     const total = grid * grid;
