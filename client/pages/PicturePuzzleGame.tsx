@@ -63,16 +63,17 @@ function makeSolvableShuffle(size: number): number[] {
 
 export default function PicturePuzzleGame() {
   const [grid, setGrid] = useState(3);
-  const [tiles, setTiles] = useState<number[]>(() => makeShuffled(3));
+  const [tiles, setTiles] = useState<number[]>(() => makeSolvableShuffle(3));
   const [round, setRound] = useState(1);
   const [moves, setMoves] = useState(0);
   const [imageUrl, setImageUrl] = useState<string>(() => IMAGES[Math.floor(Math.random() * IMAGES.length)]);
-  const [selected, setSelected] = useState<number | null>(null);
   const { authState } = useAuth();
 
-  const tileSize = useMemo(() => 100 / grid, [grid]);
-
-  const isSolved = useMemo(() => tiles.every((v, i) => v === i), [tiles]);
+  const isSolved = useMemo(() => {
+    const total = grid * grid;
+    for (let i = 0; i < total - 1; i++) if (tiles[i] !== i) return false;
+    return tiles[total - 1] === -1;
+  }, [tiles, grid]);
 
   useEffect(() => {
     if (isSolved) {
