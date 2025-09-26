@@ -228,6 +228,7 @@ export default function CardFlipGame() {
         }, 500);
       } else {
         // No match - shake animation
+        if (settings.soundEnabled) playSound("error", settings.soundVolume / 100);
         setTimeout(() => {
           const wrongCards = [
             document.querySelector(
