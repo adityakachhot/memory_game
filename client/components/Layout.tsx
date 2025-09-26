@@ -100,6 +100,9 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                   );
                 })}
+                {/* Auth buttons on mobile */}
+                {/* eslint-disable-next-line react/jsx-no-undef */}
+                {/**/}
               </div>
             </div>
           </header>
