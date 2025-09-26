@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats, logGamePlay } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 interface Cup {
   id: number;
