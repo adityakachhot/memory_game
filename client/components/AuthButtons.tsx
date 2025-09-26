@@ -46,13 +46,16 @@ export default function AuthButtons() {
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2 h-auto p-2">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 h-auto p-2"
+            >
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="text-xs">
                   {getUserInitials(authState.user.username)}
                 </AvatarFallback>
               </Avatar>
-              <span className="hidden sm:inline text-sm font-medium">
+              <span className="inline text-sm font-medium">
                 {authState.user.username}
               </span>
             </Button>
@@ -64,14 +67,17 @@ export default function AuthButtons() {
                   {authState.user.username}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  Member since {new Date(authState.user.createdAt).toLocaleDateString()}
+                  Member since{" "}
+                  {new Date(authState.user.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile (Coming Soon)</span>
+            <DropdownMenuItem asChild>
+              <a href="/profile" className="flex items-center">
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

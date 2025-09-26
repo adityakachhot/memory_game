@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats, logGamePlay } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -63,6 +64,7 @@ export default function WordBuilderGame() {
     null,
   );
   const [usedIndices, setUsedIndices] = useState<number[]>([]);
+  const [hintsLeft, setHintsLeft] = useState(1);
 
   const difficultyLabel = useMemo(() => {
     if (settings.difficulty === "normal") return "Normal";
@@ -74,8 +76,13 @@ export default function WordBuilderGame() {
   const buildRound = useCallback(
     (nextRound: number) => {
       const adaptOffset = base.adaptive ? Math.floor((nextRound - 1) / 3) : 0;
-      const min = Math.min(8, base.min + adaptOffset);
-      const max = Math.min(8, base.max + adaptOffset);
+      // Start with easy words on round 1
+      const minEasy = 3;
+      const maxEasy = 5;
+      const min =
+        nextRound === 1 ? minEasy : Math.min(8, base.min + adaptOffset);
+      const max =
+        nextRound === 1 ? maxEasy : Math.min(8, base.max + adaptOffset);
       const extra = Math.min(
         6,
         base.extraLetters + Math.floor((nextRound - 1) / 2),
@@ -89,6 +96,7 @@ export default function WordBuilderGame() {
       setGuess("");
       setUsedIndices([]);
       setMessage(null);
+      setHintsLeft(1);
     },
     [base.min, base.max, base.extraLetters, base.adaptive],
   );
@@ -102,6 +110,7 @@ export default function WordBuilderGame() {
     if (usedIndices.includes(index)) return;
     setGuess((g) => g + letters[index]);
     setUsedIndices((u) => [...u, index]);
+    if (settings.soundEnabled) playSound("click", settings.soundVolume / 100);
   };
 
   const handleBackspace = () => {
@@ -122,6 +131,8 @@ export default function WordBuilderGame() {
   const checkAnswer = () => {
     const ok = guess.toLowerCase() === targetWord.toLowerCase();
     if (ok) {
+      if (settings.soundEnabled)
+        playSound("success", settings.soundVolume / 100);
       const gained = Math.max(
         10,
         targetWord.length * 10 + (letters.length - targetWord.length) * 2,
@@ -149,6 +160,7 @@ export default function WordBuilderGame() {
     } else {
       setStreak(0);
       setMessage({ ok: false, text: "Try again!" });
+      if (settings.soundEnabled) playSound("error", settings.soundVolume / 100);
     }
   };
 
@@ -156,6 +168,27 @@ export default function WordBuilderGame() {
     setLetters((l) => shuffleArray(l));
     setUsedIndices([]);
     setGuess("");
+    if (settings.soundEnabled) playSound("move", settings.soundVolume / 100);
+  };
+
+  const useHint = () => {
+    if (hintsLeft <= 0) return;
+    // Reveal the next correct letter by appending it to the guess
+    const nextIndex = guess.length;
+    const needed = targetWord[nextIndex];
+    if (!needed) return;
+    // Find an unused letter index that matches needed
+    const idx = letters.findIndex(
+      (ch, i) =>
+        !usedIndices.includes(i) && ch.toLowerCase() === needed.toLowerCase(),
+    );
+    if (idx >= 0) {
+      setUsedIndices((u) => [...u, idx]);
+      setGuess((g) => g + letters[idx]);
+      setHintsLeft((h) => h - 1);
+      setMessage({ ok: true, text: "Hint used: next letter revealed" });
+      if (settings.soundEnabled) playSound("click", settings.soundVolume / 100);
+    }
   };
 
   const nextRound = () => {
@@ -226,7 +259,18 @@ export default function WordBuilderGame() {
         {/* Letters */}
         <Card className="bg-card/50">
           <CardHeader>
-            <CardTitle className="text-center">Choose Letters</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Choose Letters</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={useHint}
+                disabled={hintsLeft <= 0}
+                className="gap-2"
+              >
+                Hint ({hintsLeft})
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto py-2">

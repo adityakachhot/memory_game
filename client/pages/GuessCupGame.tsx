@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats, logGamePlay } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 interface Cup {
   id: number;
@@ -79,6 +80,7 @@ export default function GuessCupGame() {
     setGamePhase("showing");
 
     // Show the ball for 3 seconds
+    if (settings.soundEnabled) playSound("start", settings.soundVolume / 100);
     setCups((prev) => prev.map((cup) => ({ ...cup, isLifted: true })));
 
     setTimeout(() => {
@@ -160,6 +162,8 @@ export default function GuessCupGame() {
     const isCorrect = clickedCup?.hasBall || false;
 
     setLastGuessCorrect(isCorrect);
+    if (settings.soundEnabled)
+      playSound(isCorrect ? "success" : "error", settings.soundVolume / 100);
     setShowResult(true);
 
     // Lift all cups to show result
