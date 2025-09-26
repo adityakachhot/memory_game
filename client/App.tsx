@@ -18,6 +18,7 @@ import Leaderboard from "./pages/Leaderboard";
 import WordBuilderGame from "./pages/WordBuilderGame";
 import PicturePuzzleGame from "./pages/PicturePuzzleGame";
 import PVP from "./pages/PVP";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
