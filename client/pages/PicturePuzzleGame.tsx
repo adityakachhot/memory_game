@@ -94,7 +94,7 @@ export default function PicturePuzzleGame() {
           imageUrl,
         }).catch(() => {});
       }
-      playSound("success", 0.6);
+      if (settings.soundEnabled) playSound("success", settings.soundVolume / 100);
       const nextGrid = grid < 5 ? grid + 1 : grid; // grow to 5x5 max
       const nextRound = round + 1;
       setTimeout(() => {
@@ -133,7 +133,7 @@ export default function PicturePuzzleGame() {
       [copy[empty], copy[idx]] = [copy[idx], copy[empty]];
       return copy;
     });
-    if (true) {}
+    if (settings.soundEnabled) playSound("move", settings.soundVolume / 100);
     setMoves((m) => m + 1);
   };
 
