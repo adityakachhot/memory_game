@@ -180,6 +180,7 @@ export default function CardFlipGame() {
       }, 100);
     }
 
+    if (settings.soundEnabled) playSound("flip", settings.soundVolume / 100);
     const newFlippedCards = [...flippedCards, cardId];
     setFlippedCards(newFlippedCards);
 
