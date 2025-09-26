@@ -222,6 +222,7 @@ export default function CardFlipGame() {
                 : c,
             ),
           );
+          if (settings.soundEnabled) playSound("success", settings.soundVolume / 100);
           setMatches((prev) => prev + 1);
           setFlippedCards([]);
         }, 500);
