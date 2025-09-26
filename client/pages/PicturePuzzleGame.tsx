@@ -8,6 +8,7 @@ import { ArrowLeft, RotateCcw, Shuffle } from "lucide-react";
 import { motion, LayoutGroup } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { logGamePlay, updateGameStats } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 const IMAGES = [
   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop",
@@ -91,6 +92,7 @@ export default function PicturePuzzleGame() {
           imageUrl,
         }).catch(() => {});
       }
+      playSound("success", 0.6);
       const nextGrid = grid < 5 ? grid + 1 : grid; // grow to 5x5 max
       const nextRound = round + 1;
       setTimeout(() => {
@@ -129,6 +131,7 @@ export default function PicturePuzzleGame() {
       [copy[empty], copy[idx]] = [copy[idx], copy[empty]];
       return copy;
     });
+    playSound("move", 0.5);
     setMoves((m) => m + 1);
   };
 
@@ -169,12 +172,13 @@ export default function PicturePuzzleGame() {
           </CardHeader>
           <CardContent>
             <LayoutGroup>
-              <div
-                className="relative mx-auto"
-                style={{ width: 360, height: 360 }}
-              >
+              <div className="flex flex-col md:flex-row items-start justify-center gap-6">
                 <div
-                  className="grid"
+                  className="relative mx-auto"
+                  style={{ width: 360, height: 360 }}
+                >
+                  <div
+                    className="grid"
                   style={{
                     gridTemplateColumns: `repeat(${grid}, 1fr)`,
                     gridTemplateRows: `repeat(${grid}, 1fr)`,
@@ -205,6 +209,16 @@ export default function PicturePuzzleGame() {
                       />
                     );
                   })}
+                </div>
+                </div>
+                {/* Reference image */}
+                <div className="md:self-center">
+                  <div className="text-sm text-muted-foreground mb-2 text-center md:text-left">Reference</div>
+                  <img
+                    src={imageUrl}
+                    alt="Reference"
+                    className="w-40 h-40 object-cover rounded-md border"
+                  />
                 </div>
               </div>
             </LayoutGroup>
