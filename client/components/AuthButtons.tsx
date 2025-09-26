@@ -52,7 +52,7 @@ export default function AuthButtons() {
                   {getUserInitials(authState.user.username)}
                 </AvatarFallback>
               </Avatar>
-              <span className="hidden sm:inline text-sm font-medium">
+              <span className="inline text-sm font-medium">
                 {authState.user.username}
               </span>
             </Button>
