@@ -59,7 +59,10 @@ function makeSolvableShuffle(size: number): number[] {
   do {
     tiles = [...base];
     shuffle(tiles);
-  } while (!isSolvable(tiles, size) || tiles.every((v, i) => (i < total - 1 ? v === i : v === -1)));
+  } while (
+    !isSolvable(tiles, size) ||
+    tiles.every((v, i) => (i < total - 1 ? v === i : v === -1))
+  );
   return tiles;
 }
 
@@ -68,7 +71,9 @@ export default function PicturePuzzleGame() {
   const [tiles, setTiles] = useState<number[]>(() => makeSolvableShuffle(3));
   const [round, setRound] = useState(1);
   const [moves, setMoves] = useState(0);
-  const [imageUrl, setImageUrl] = useState<string>(() => IMAGES[Math.floor(Math.random() * IMAGES.length)]);
+  const [imageUrl, setImageUrl] = useState<string>(
+    () => IMAGES[Math.floor(Math.random() * IMAGES.length)],
+  );
   const { authState } = useAuth();
   const { settings } = useSettings();
 
@@ -94,7 +99,8 @@ export default function PicturePuzzleGame() {
           imageUrl,
         }).catch(() => {});
       }
-      if (settings.soundEnabled) playSound("success", settings.soundVolume / 100);
+      if (settings.soundEnabled)
+        playSound("success", settings.soundVolume / 100);
       const nextGrid = grid < 5 ? grid + 1 : grid; // grow to 5x5 max
       const nextRound = round + 1;
       setTimeout(() => {
@@ -149,7 +155,12 @@ export default function PicturePuzzleGame() {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold text-foreground">Picture Puzzle</h1>
-          <Button variant="outline" size="sm" onClick={resetGame} className="gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetGame}
+            className="gap-2"
+          >
             <RotateCcw className="h-4 w-4" />
             New Game
           </Button>
@@ -157,17 +168,44 @@ export default function PicturePuzzleGame() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-          <Card className="bg-card/50"><CardContent className="p-4"><div className="text-xs text-muted-foreground">Round</div><div className="text-xl font-bold">{round}</div></CardContent></Card>
-          <Card className="bg-card/50"><CardContent className="p-4"><div className="text-xs text-muted-foreground">Grid</div><div className="text-xl font-bold">{grid}×{grid}</div></CardContent></Card>
-          <Card className="bg-card/50"><CardContent className="p-4"><div className="text-xs text-muted-foreground">Moves</div><div className="text-xl font-bold">{moves}</div></CardContent></Card>
-          <Card className="bg-card/50 md:col-span-3"><CardContent className="p-4 flex items-center gap-2"><Badge variant="secondary">Fluent transitions</Badge><Badge variant="secondary">Random image each round</Badge></CardContent></Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4">
+              <div className="text-xs text-muted-foreground">Round</div>
+              <div className="text-xl font-bold">{round}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4">
+              <div className="text-xs text-muted-foreground">Grid</div>
+              <div className="text-xl font-bold">
+                {grid}×{grid}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4">
+              <div className="text-xs text-muted-foreground">Moves</div>
+              <div className="text-xl font-bold">{moves}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50 md:col-span-3">
+            <CardContent className="p-4 flex items-center gap-2">
+              <Badge variant="secondary">Fluent transitions</Badge>
+              <Badge variant="secondary">Random image each round</Badge>
+            </CardContent>
+          </Card>
         </div>
 
         <Card className="bg-card/50">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Arrange the tiles</CardTitle>
-              <Button variant="outline" size="sm" onClick={shuffle} className="gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={shuffle}
+                className="gap-2"
+              >
                 <Shuffle className="h-4 w-4" /> Shuffle
               </Button>
             </div>
@@ -181,41 +219,53 @@ export default function PicturePuzzleGame() {
                 >
                   <div
                     className="grid"
-                  style={{
-                    gridTemplateColumns: `repeat(${grid}, 1fr)`,
-                    gridTemplateRows: `repeat(${grid}, 1fr)`,
-                    width: "100%",
-                    height: "100%",
-                    gap: 4,
-                  }}
-                >
-                  {tiles.map((tile, idx) => {
-                    const percent = 100;
-                    const bgX = tile >= 0 ? (tile % grid) * (percent / (grid - 1)) : 0;
-                    const bgY = tile >= 0 ? Math.floor(tile / grid) * (percent / (grid - 1)) : 0;
-                    const isEmpty = tile === -1;
-                    return (
-                      <motion.button
-                        key={tile + "-" + idx}
-                        layout
-                        whileTap={!isEmpty ? { scale: 0.97 } : undefined}
-                        onClick={() => handleClick(idx)}
-                        className={`rounded-md border overflow-hidden focus:outline-none ${isEmpty ? "bg-black" : ""}`}
-                        style={{
-                          backgroundImage: isEmpty ? undefined : `url(${imageUrl})`,
-                          backgroundSize: isEmpty ? undefined : `${grid * 100}% ${grid * 100}%`,
-                          backgroundPosition: isEmpty ? undefined : `${bgX}% ${bgY}%`,
-                          aspectRatio: "1 / 1",
-                        }}
-                        aria-label={isEmpty ? "Empty slot" : "Tile"}
-                      />
-                    );
-                  })}
-                </div>
+                    style={{
+                      gridTemplateColumns: `repeat(${grid}, 1fr)`,
+                      gridTemplateRows: `repeat(${grid}, 1fr)`,
+                      width: "100%",
+                      height: "100%",
+                      gap: 4,
+                    }}
+                  >
+                    {tiles.map((tile, idx) => {
+                      const percent = 100;
+                      const bgX =
+                        tile >= 0 ? (tile % grid) * (percent / (grid - 1)) : 0;
+                      const bgY =
+                        tile >= 0
+                          ? Math.floor(tile / grid) * (percent / (grid - 1))
+                          : 0;
+                      const isEmpty = tile === -1;
+                      return (
+                        <motion.button
+                          key={tile + "-" + idx}
+                          layout
+                          whileTap={!isEmpty ? { scale: 0.97 } : undefined}
+                          onClick={() => handleClick(idx)}
+                          className={`rounded-md border overflow-hidden focus:outline-none ${isEmpty ? "bg-black" : ""}`}
+                          style={{
+                            backgroundImage: isEmpty
+                              ? undefined
+                              : `url(${imageUrl})`,
+                            backgroundSize: isEmpty
+                              ? undefined
+                              : `${grid * 100}% ${grid * 100}%`,
+                            backgroundPosition: isEmpty
+                              ? undefined
+                              : `${bgX}% ${bgY}%`,
+                            aspectRatio: "1 / 1",
+                          }}
+                          aria-label={isEmpty ? "Empty slot" : "Tile"}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
                 {/* Reference image */}
                 <div className="md:self-center">
-                  <div className="text-sm text-muted-foreground mb-2 text-center md:text-left">Reference</div>
+                  <div className="text-sm text-muted-foreground mb-2 text-center md:text-left">
+                    Reference
+                  </div>
                   <img
                     src={imageUrl}
                     alt="Reference"

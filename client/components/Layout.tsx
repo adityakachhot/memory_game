@@ -27,7 +27,10 @@ export default function Layout({ children }: LayoutProps) {
         {sidebarOpen && (
           <aside className="hidden md:flex md:w-64 lg:w-72 flex-col border-r border-border bg-card/40 backdrop-blur-sm min-h-screen sticky top-0">
             <div className="h-16 px-4 flex items-center justify-between border-b border-border">
-              <Link to="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
+              <Link
+                to="/"
+                className="flex items-center gap-2 text-xl font-bold text-foreground"
+              >
                 <Brain className="h-7 w-7 text-primary" />
                 MemoryMaster
               </Link>
@@ -81,7 +84,10 @@ export default function Layout({ children }: LayoutProps) {
           {/* Top bar (mobile + content header) */}
           <header className="md:hidden border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
             <div className="px-4 h-16 flex items-center justify-between">
-              <Link to="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
+              <Link
+                to="/"
+                className="flex items-center gap-2 text-xl font-bold text-foreground"
+              >
                 <Brain className="h-7 w-7 text-primary" />
                 MM
               </Link>
@@ -94,7 +100,9 @@ export default function Layout({ children }: LayoutProps) {
                       <Button
                         variant={isActive ? "default" : "ghost"}
                         size="sm"
-                        className={cn(isActive && "bg-primary text-primary-foreground")}
+                        className={cn(
+                          isActive && "bg-primary text-primary-foreground",
+                        )}
                       >
                         <Icon className="h-4 w-4" />
                       </Button>

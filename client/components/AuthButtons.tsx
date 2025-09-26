@@ -46,7 +46,10 @@ export default function AuthButtons() {
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2 h-auto p-2">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 h-auto p-2"
+            >
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="text-xs">
                   {getUserInitials(authState.user.username)}
@@ -64,7 +67,8 @@ export default function AuthButtons() {
                   {authState.user.username}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  Member since {new Date(authState.user.createdAt).toLocaleDateString()}
+                  Member since{" "}
+                  {new Date(authState.user.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </DropdownMenuLabel>

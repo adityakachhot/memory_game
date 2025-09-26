@@ -162,7 +162,8 @@ export default function GuessCupGame() {
     const isCorrect = clickedCup?.hasBall || false;
 
     setLastGuessCorrect(isCorrect);
-    if (settings.soundEnabled) playSound(isCorrect ? "success" : "error", settings.soundVolume / 100);
+    if (settings.soundEnabled)
+      playSound(isCorrect ? "success" : "error", settings.soundVolume / 100);
     setShowResult(true);
 
     // Lift all cups to show result

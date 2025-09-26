@@ -60,7 +60,9 @@ export default function WordBuilderGame() {
   const [targetWord, setTargetWord] = useState("");
   const [letters, setLetters] = useState<string[]>([]);
   const [guess, setGuess] = useState("");
-  const [message, setMessage] = useState<null | { ok: boolean; text: string }>(null);
+  const [message, setMessage] = useState<null | { ok: boolean; text: string }>(
+    null,
+  );
   const [usedIndices, setUsedIndices] = useState<number[]>([]);
   const [hintsLeft, setHintsLeft] = useState(1);
 
@@ -77,8 +79,10 @@ export default function WordBuilderGame() {
       // Start with easy words on round 1
       const minEasy = 3;
       const maxEasy = 5;
-      const min = nextRound === 1 ? minEasy : Math.min(8, base.min + adaptOffset);
-      const max = nextRound === 1 ? maxEasy : Math.min(8, base.max + adaptOffset);
+      const min =
+        nextRound === 1 ? minEasy : Math.min(8, base.min + adaptOffset);
+      const max =
+        nextRound === 1 ? maxEasy : Math.min(8, base.max + adaptOffset);
       const extra = Math.min(
         6,
         base.extraLetters + Math.floor((nextRound - 1) / 2),
@@ -127,7 +131,8 @@ export default function WordBuilderGame() {
   const checkAnswer = () => {
     const ok = guess.toLowerCase() === targetWord.toLowerCase();
     if (ok) {
-      if (settings.soundEnabled) playSound("success", settings.soundVolume / 100);
+      if (settings.soundEnabled)
+        playSound("success", settings.soundVolume / 100);
       const gained = Math.max(
         10,
         targetWord.length * 10 + (letters.length - targetWord.length) * 2,
@@ -173,7 +178,10 @@ export default function WordBuilderGame() {
     const needed = targetWord[nextIndex];
     if (!needed) return;
     // Find an unused letter index that matches needed
-    const idx = letters.findIndex((ch, i) => !usedIndices.includes(i) && ch.toLowerCase() === needed.toLowerCase());
+    const idx = letters.findIndex(
+      (ch, i) =>
+        !usedIndices.includes(i) && ch.toLowerCase() === needed.toLowerCase(),
+    );
     if (idx >= 0) {
       setUsedIndices((u) => [...u, idx]);
       setGuess((g) => g + letters[idx]);

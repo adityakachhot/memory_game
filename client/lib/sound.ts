@@ -12,7 +12,13 @@ function getCtx(): AudioContext | null {
   return ctx;
 }
 
-export type SoundName = "flip" | "success" | "error" | "click" | "move" | "start";
+export type SoundName =
+  | "flip"
+  | "success"
+  | "error"
+  | "click"
+  | "move"
+  | "start";
 
 export function playSound(name: SoundName, volume = 0.6, durationMs?: number) {
   const audio = getCtx();
