@@ -106,7 +106,7 @@ export default function WordBuilderGame() {
     if (usedIndices.includes(index)) return;
     setGuess((g) => g + letters[index]);
     setUsedIndices((u) => [...u, index]);
-    playSound("click", 0.5);
+    if (settings.soundEnabled) playSound("click", settings.soundVolume / 100);
   };
 
   const handleBackspace = () => {
@@ -127,7 +127,7 @@ export default function WordBuilderGame() {
   const checkAnswer = () => {
     const ok = guess.toLowerCase() === targetWord.toLowerCase();
     if (ok) {
-      playSound("success", 0.6);
+      if (settings.soundEnabled) playSound("success", settings.soundVolume / 100);
       const gained = Math.max(
         10,
         targetWord.length * 10 + (letters.length - targetWord.length) * 2,
@@ -155,7 +155,7 @@ export default function WordBuilderGame() {
     } else {
       setStreak(0);
       setMessage({ ok: false, text: "Try again!" });
-      playSound("error", 0.6);
+      if (settings.soundEnabled) playSound("error", settings.soundVolume / 100);
     }
   };
 
@@ -163,7 +163,7 @@ export default function WordBuilderGame() {
     setLetters((l) => shuffleArray(l));
     setUsedIndices([]);
     setGuess("");
-    playSound("move", 0.4);
+    if (settings.soundEnabled) playSound("move", settings.soundVolume / 100);
   };
 
   const useHint = () => {
@@ -179,7 +179,7 @@ export default function WordBuilderGame() {
       setGuess((g) => g + letters[idx]);
       setHintsLeft((h) => h - 1);
       setMessage({ ok: true, text: "Hint used: next letter revealed" });
-      playSound("click", 0.4);
+      if (settings.soundEnabled) playSound("click", settings.soundVolume / 100);
     }
   };
 
