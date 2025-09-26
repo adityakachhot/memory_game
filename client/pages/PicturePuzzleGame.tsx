@@ -96,9 +96,8 @@ export default function PicturePuzzleGame() {
       setTimeout(() => {
         setRound(nextRound);
         setGrid(nextGrid);
-        setTiles(makeShuffled(nextGrid));
+        setTiles(makeSolvableShuffle(nextGrid));
         setMoves(0);
-        setSelected(null);
         setImageUrl(IMAGES[Math.floor(Math.random() * IMAGES.length)]);
       }, 600);
     }
@@ -107,34 +106,30 @@ export default function PicturePuzzleGame() {
   const resetGame = () => {
     setRound(1);
     setGrid(3);
-    setTiles(makeShuffled(3));
+    setTiles(makeSolvableShuffle(3));
     setMoves(0);
-    setSelected(null);
     setImageUrl(IMAGES[Math.floor(Math.random() * IMAGES.length)]);
   };
 
   const shuffle = () => {
-    setTiles((t) => makeShuffled(grid));
+    setTiles(makeSolvableShuffle(grid));
     setMoves(0);
-    setSelected(null);
   };
 
   const handleClick = (idx: number) => {
-    if (selected === null) {
-      setSelected(idx);
-      return;
-    }
-    if (selected === idx) {
-      setSelected(null);
-      return;
-    }
+    const empty = tiles.indexOf(-1);
+    const er = Math.floor(empty / grid);
+    const ec = empty % grid;
+    const r = Math.floor(idx / grid);
+    const c = idx % grid;
+    const isNeighbor = Math.abs(er - r) + Math.abs(ec - c) === 1;
+    if (!isNeighbor) return;
     setTiles((arr) => {
       const copy = [...arr];
-      [copy[selected], copy[idx]] = [copy[idx], copy[selected]];
+      [copy[empty], copy[idx]] = [copy[idx], copy[empty]];
       return copy;
     });
     setMoves((m) => m + 1);
-    setSelected(null);
   };
 
   return (
@@ -189,24 +184,24 @@ export default function PicturePuzzleGame() {
                   }}
                 >
                   {tiles.map((tile, idx) => {
-                    const row = Math.floor(idx / grid);
-                    const col = idx % grid;
                     const percent = 100;
-                    const bgX = (tile % grid) * (percent / (grid - 1));
-                    const bgY = Math.floor(tile / grid) * (percent / (grid - 1));
+                    const bgX = tile >= 0 ? (tile % grid) * (percent / (grid - 1)) : 0;
+                    const bgY = tile >= 0 ? Math.floor(tile / grid) * (percent / (grid - 1)) : 0;
+                    const isEmpty = tile === -1;
                     return (
                       <motion.button
                         key={tile + "-" + idx}
                         layout
-                        whileTap={{ scale: 0.97 }}
+                        whileTap={!isEmpty ? { scale: 0.97 } : undefined}
                         onClick={() => handleClick(idx)}
-                        className={`rounded-md border overflow-hidden focus:outline-none ${selected === idx ? "ring-2 ring-primary" : ""}`}
+                        className={`rounded-md border overflow-hidden focus:outline-none ${isEmpty ? "bg-black" : ""}`}
                         style={{
-                          backgroundImage: `url(${imageUrl})`,
-                          backgroundSize: `${grid * 100}% ${grid * 100}%`,
-                          backgroundPosition: `${bgX}% ${bgY}%`,
+                          backgroundImage: isEmpty ? undefined : `url(${imageUrl})`,
+                          backgroundSize: isEmpty ? undefined : `${grid * 100}% ${grid * 100}%`,
+                          backgroundPosition: isEmpty ? undefined : `${bgX}% ${bgY}%`,
                           aspectRatio: "1 / 1",
                         }}
+                        aria-label={isEmpty ? "Empty slot" : "Tile"}
                       />
                     );
                   })}
