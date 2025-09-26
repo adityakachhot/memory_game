@@ -79,6 +79,7 @@ export default function GuessCupGame() {
     setGamePhase("showing");
 
     // Show the ball for 3 seconds
+    if (settings.soundEnabled) playSound("start", settings.soundVolume / 100);
     setCups((prev) => prev.map((cup) => ({ ...cup, isLifted: true })));
 
     setTimeout(() => {
