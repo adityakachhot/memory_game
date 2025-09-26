@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats, logGamePlay } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
