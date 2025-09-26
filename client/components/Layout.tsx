@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Brain, Trophy, Settings, Home, Menu, X } from "lucide-react";
+import { Brain, Trophy, Settings, Home, Menu, X, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LayoutProps {
@@ -14,6 +14,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
+    { name: "PVP", href: "/pvp", icon: Users },
     { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
