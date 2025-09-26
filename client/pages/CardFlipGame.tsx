@@ -10,6 +10,7 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { mapSettingsToThreeLevel } from "@/lib/difficulty";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats, logGamePlay } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 interface GameCard {
   id: number;
