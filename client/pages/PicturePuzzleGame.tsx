@@ -17,14 +17,48 @@ const IMAGES = [
   "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1200&auto=format&fit=crop",
 ];
 
-function makeShuffled(size: number): number[] {
-  const arr = Array.from({ length: size * size }, (_, i) => i);
-  // simple shuffle
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+function countInversions(arr: number[]): number {
+  const a = arr.filter((v) => v !== -1);
+  let inv = 0;
+  for (let i = 0; i < a.length; i++) {
+    for (let j = i + 1; j < a.length; j++) {
+      if (a[i] > a[j]) inv++;
+    }
   }
-  return arr;
+  return inv;
+}
+
+function isSolvable(tiles: number[], size: number): boolean {
+  const inv = countInversions(tiles);
+  if (size % 2 === 1) {
+    return inv % 2 === 0;
+  } else {
+    const emptyIndex = tiles.indexOf(-1);
+    const emptyRowFromBottom = size - Math.floor(emptyIndex / size);
+    if (emptyRowFromBottom % 2 === 0) {
+      return inv % 2 === 1;
+    } else {
+      return inv % 2 === 0;
+    }
+  }
+}
+
+function makeSolvableShuffle(size: number): number[] {
+  const total = size * size;
+  const base = Array.from({ length: total - 1 }, (_, i) => i);
+  base.push(-1);
+  let tiles = [...base];
+  const shuffle = (arr: number[]) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  };
+  do {
+    tiles = [...base];
+    shuffle(tiles);
+  } while (!isSolvable(tiles, size) || tiles.every((v, i) => (i < total - 1 ? v === i : v === -1)));
+  return tiles;
 }
 
 export default function PicturePuzzleGame() {
