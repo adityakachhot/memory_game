@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RotateCcw, Shuffle } from "lucide-react";
 import { motion, LayoutGroup } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/contexts/SettingsContext";
 import { logGamePlay, updateGameStats } from "@/lib/user-stats";
 import { playSound } from "@/lib/sound";
 
