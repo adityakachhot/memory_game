@@ -116,7 +116,7 @@ export default function RegisterModal({
         <DialogHeader>
           <DialogTitle>Create Account</DialogTitle>
           <DialogDescription>
-            Join MemoryMaster and start your brain training journey today.
+            Join Memovate and start your memory elevation journey today.
           </DialogDescription>
         </DialogHeader>
 

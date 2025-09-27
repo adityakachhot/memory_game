@@ -40,7 +40,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   // Load settings from localStorage on mount
   useEffect(() => {
     try {
-      const savedSettings = localStorage.getItem("memorymaster-settings");
+      const savedSettings = localStorage.getItem("memovate-settings");
       if (savedSettings) {
         const parsedSettings = JSON.parse(savedSettings);
         setSettings({ ...defaultSettings, ...parsedSettings });
@@ -108,7 +108,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     // Save to localStorage
     try {
       localStorage.setItem(
-        "memorymaster-settings",
+        "memovate-settings",
         JSON.stringify(updatedSettings),
       );
     } catch (error) {
@@ -119,7 +119,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetSettings = () => {
     setSettings(defaultSettings);
     try {
-      localStorage.removeItem("memorymaster-settings");
+      localStorage.removeItem("memovate-settings");
     } catch (error) {
       console.error("Error resetting settings:", error);
     }

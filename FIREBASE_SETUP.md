@@ -1,4 +1,4 @@
-## Firebase setup for Memory Master
+## Firebase setup for Memovate
 
 1) Create a Web App in Firebase Console for project `memory-master-41cca` and copy the config.
 

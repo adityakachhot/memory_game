@@ -83,11 +83,11 @@ export default function Index() {
         {/* Hero Section */}
         <div className="text-center space-y-4 animate-fade-in-up">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-float animate-glow">
-            Memory Master
+            Memovate
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto animation-delay-300 animate-fade-in-up">
-            Challenge your mind with our collection of memory games. Train your
-            brain, improve your focus, and compete with others.
+            Elevate your memory to new heights with our innovative brain training games. 
+            Strengthen your cognitive abilities, enhance focus, and unlock your mental potential.
           </p>
         </div>
 

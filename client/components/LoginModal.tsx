@@ -67,7 +67,7 @@ export default function LoginModal({
         <DialogHeader>
           <DialogTitle>Welcome Back</DialogTitle>
           <DialogDescription>
-            Sign in to your MemoryMaster account to continue your journey.
+            Sign in to your Memovate account to continue your journey.
           </DialogDescription>
         </DialogHeader>
 
