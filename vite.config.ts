@@ -10,14 +10,14 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     hmr: { overlay: false },
     fs: {
-      allow: ["./client", "./shared"],
+      allow: ["./", "./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
   },
   build: {
     outDir: "dist/spa",
   },
-  plugins: [react(), expressPlugin()],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
@@ -33,8 +33,8 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+      // Add Express app as middleware to Vite dev server, but only for API routes
+      server.middlewares.use("/api", app);
     },
   };
 }

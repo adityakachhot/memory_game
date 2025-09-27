@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { db } from "@/lib/firebase";
 import {
   collectionGroup,
+  collection,
   getDocs,
   limit,
   orderBy,
@@ -148,6 +149,38 @@ function useLeaderboard(gameId: GameId) {
   return rows;
 }
 
+function useGlobalLeaderboard() {
+  const { authState } = useAuth();
+  const [rows, setRows] = useState<LeaderboardEntry[]>([]);
+  useEffect(() => {
+    async function run() {
+      try {
+        const users = collection(db, "users");
+        const q = query(users, orderBy("totalScore", "desc"), limit(20));
+        const snap = await getDocs(q);
+        const result: LeaderboardEntry[] = [];
+        let i = 0;
+        snap.forEach((d) => {
+          const data = d.data() as any;
+          const name = data.username || data.email?.split("@")[0] || "Player";
+          result.push({
+            rank: ++i,
+            name,
+            score: data.totalScore || 0,
+            avatar: name.slice(0, 1).toUpperCase(),
+            isCurrentUser: !!authState.user && d.id === authState.user.id,
+          });
+        });
+        setRows(result);
+      } catch (e) {
+        setRows([]);
+      }
+    }
+    run();
+  }, [authState.user?.id]);
+  return rows;
+}
+
 export default function Leaderboard() {
   const [timeFilter, setTimeFilter] = useState("all-time");
 
@@ -265,6 +298,7 @@ export default function Leaderboard() {
     </div>
   );
 
+  const overallRows = useGlobalLeaderboard();
   const cfRows = useLeaderboard("card-flip");
   const gcRows = useLeaderboard("guess-cup");
   const ssRows = useLeaderboard("simon-says");
@@ -294,8 +328,12 @@ export default function Leaderboard() {
           ))}
         </div>
 
-        <Tabs defaultValue="card-flip" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="overall" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overall" className="gap-2">
+              <Trophy className="h-4 w-4" />
+              Overall
+            </TabsTrigger>
             <TabsTrigger value="card-flip" className="gap-2">
               <Layers className="h-4 w-4" />
               Card Flip
@@ -313,6 +351,21 @@ export default function Leaderboard() {
               Achievements
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overall" className="space-y-4">
+            <Card className="bg-card/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  Overall - Top Players
+                </CardTitle>
+                <CardDescription>Total score across all games</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LeaderboardTable data={overallRows} />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="card-flip" className="space-y-4">
             <Card className="bg-card/50">

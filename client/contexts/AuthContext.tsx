@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  signInAnonymously,
 } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -51,16 +52,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Subscribe to Firebase auth state
   useEffect(() => {
     let resolved = false;
+    let lastUid: string | null = null;
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
       if (!fbUser) {
-        setAuthState({ user: null, isAuthenticated: false, isLoading: false });
+        setAuthState((prev) => {
+          if (!prev.isAuthenticated && prev.user === null && !prev.isLoading) return prev;
+          return { user: null, isAuthenticated: false, isLoading: false };
+        });
         resolved = true;
         return;
       }
+      if (lastUid === fbUser.uid && authState.isAuthenticated) {
+        resolved = true;
+        return;
+      }
+      lastUid = fbUser.uid;
       const ref = doc(db, "users", fbUser.uid);
       let profile: { username: string; email: string; createdAt?: any } = {
-        username: fbUser.displayName || fbUser.email?.split("@")[0] || "Player",
-        email: fbUser.email || "",
+        username:
+          fbUser.displayName ||
+          fbUser.email?.split("@")[0] ||
+          (fbUser.isAnonymous ? "Guest" : "Player"),
+        email: fbUser.email || (fbUser.isAnonymous ? "" : ""),
         createdAt: new Date().toISOString(),
       };
       try {
@@ -81,6 +94,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               username: profile.username,
               email: profile.email,
               createdAt: serverTimestamp(),
+              totalScore: 0,
+              gamesPlayed: 0,
             },
             { merge: true },
           );
@@ -88,15 +103,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (e) {
         console.warn("Firestore profile access failed (using fallback):", e);
       }
-      setAuthState({
-        user: {
-          id: fbUser.uid,
-          username: profile.username,
-          email: profile.email,
-          createdAt: profile.createdAt,
-        },
-        isAuthenticated: true,
-        isLoading: false,
+      setAuthState((prev) => {
+        if (prev.user?.id === fbUser.uid && prev.isAuthenticated && !prev.isLoading) return prev;
+        return {
+          user: {
+            id: fbUser.uid,
+            username: profile.username,
+            email: profile.email,
+            createdAt: profile.createdAt,
+          },
+          isAuthenticated: true,
+          isLoading: false,
+        };
       });
       resolved = true;
     });
@@ -111,6 +129,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       clearTimeout(t);
       unsub();
     };
+  }, []);
+
+  // Auto sign-in anonymously to allow storing scores for guests (skip if it fails once)
+  useEffect(() => {
+    let attempted = false;
+    const skip = typeof window !== "undefined" && sessionStorage.getItem("mm-skip-anon") === "1";
+    if (!auth.currentUser && !skip && !attempted) {
+      attempted = true;
+      signInAnonymously(auth).catch(() => {
+        try {
+          sessionStorage.setItem("mm-skip-anon", "1");
+        } catch {}
+      });
+    }
   }, []);
 
   const register = async (
@@ -159,6 +191,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             username: username.trim(),
             email: email.trim(),
             createdAt: serverTimestamp(),
+            totalScore: 0,
+            gamesPlayed: 0,
           },
           { merge: true },
         );

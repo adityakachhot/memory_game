@@ -10,6 +10,7 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { mapSettingsToThreeLevel } from "@/lib/difficulty";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateGameStats, logGamePlay } from "@/lib/user-stats";
+import { playSound } from "@/lib/sound";
 
 interface GameCard {
   id: number;
@@ -179,6 +180,7 @@ export default function CardFlipGame() {
       }, 100);
     }
 
+    if (settings.soundEnabled) playSound("flip", settings.soundVolume / 100);
     const newFlippedCards = [...flippedCards, cardId];
     setFlippedCards(newFlippedCards);
 
@@ -220,11 +222,15 @@ export default function CardFlipGame() {
                 : c,
             ),
           );
+          if (settings.soundEnabled)
+            playSound("success", settings.soundVolume / 100);
           setMatches((prev) => prev + 1);
           setFlippedCards([]);
         }, 500);
       } else {
         // No match - shake animation
+        if (settings.soundEnabled)
+          playSound("error", settings.soundVolume / 100);
         setTimeout(() => {
           const wrongCards = [
             document.querySelector(

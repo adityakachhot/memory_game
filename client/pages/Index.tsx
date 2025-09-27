@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Layers, Trophy, Brain, Palette, Type } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Layers, Trophy, Brain, Palette, Type, Image as ImageIcon } from "lucide-react";
 import Layout from "@/components/Layout";
+import ThemeToggle from "@/components/ThemeToggle";
+import AuthButtons from "@/components/AuthButtons";
 
 const games = [
   {
@@ -58,12 +58,28 @@ const games = [
     borderColor: "border-emerald-500/30",
     href: "/game/word-builder",
   },
+  {
+    id: "picture-puzzle",
+    title: "Picture Puzzle",
+    description:
+      "Arrange shuffled image tiles. Starts at 3×3 with smooth transitions and new images each round.",
+    icon: ImageIcon,
+    difficulty: "Easy",
+    color: "from-pink-600/20 to-rose-800/20",
+    borderColor: "border-pink-500/30",
+    href: "/game/picture-puzzle",
+  },
 ];
 
 export default function Index() {
   return (
     <Layout>
       <div className="space-y-8 overflow-hidden">
+        {/* Page toolbar */}
+        <div className="flex justify-end items-center gap-2">
+          <AuthButtons />
+          <ThemeToggle />
+        </div>
         {/* Hero Section */}
         <div className="text-center space-y-4 animate-fade-in-up">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-float animate-glow">

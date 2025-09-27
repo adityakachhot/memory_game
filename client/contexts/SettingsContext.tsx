@@ -12,7 +12,7 @@ export interface GameSettings {
 }
 
 const defaultSettings: GameSettings = {
-  theme: "dark",
+  theme: "light",
   animationSpeed: "normal",
   soundEnabled: true,
   soundVolume: 70,
