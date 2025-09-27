@@ -309,7 +309,7 @@ export default function Leaderboard() {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-foreground">Leaderboard</h1>
           <p className="text-muted-foreground">
-            See how you rank against other memory masters
+            See how you rank against other memory champions
           </p>
         </div>
 

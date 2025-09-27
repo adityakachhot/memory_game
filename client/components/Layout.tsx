@@ -32,7 +32,7 @@ export default function Layout({ children }: LayoutProps) {
                 className="flex items-center gap-2 text-xl font-bold text-foreground"
               >
                 <Brain className="h-7 w-7 text-primary" />
-                MemoryMaster
+                Memovate
               </Link>
               <Button
                 variant="ghost"
